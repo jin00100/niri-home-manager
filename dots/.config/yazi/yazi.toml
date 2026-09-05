@@ -1,0 +1,24 @@
+[manager]
+show_hidden = false
+sort_by     = "alphabetical"
+linemode    = "githead"
+
+[status]
+left  = [
+  { name = "hovered", collect = false },
+  { name = "count",   collect = false },
+  { name = "githead", collect = false },
+]
+right = [
+  { name = "cursor",      collect = false },
+  { name = "sort",        collect = false },
+  { name = "permissions", collect = false },
+]
+
+[opener]
+edit = [
+  { run = 'nvim "$@"', block = true },
+]
+
+[theme]
+flavor = "ayu-dark"

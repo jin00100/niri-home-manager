@@ -1,0 +1,56 @@
+// ── Retro CRT [Retro CRT] ──────────────────────────────────────────────────────
+animations {
+    window-open {
+        duration-ms 220
+        curve "linear"
+        custom-shader r"
+            vec4 open_color(vec3 coords_geo, vec3 size_geo) {
+                float p = niri_clamped_progress;
+                float p_w = clamp(p / 0.35, 0.0, 1.0);
+                float p_h = clamp((p - 0.25) / 0.75, 0.0, 1.0);
+                float w_scale = max(0.005, p_w);
+                float h_scale = max(0.005, p_h);
+
+                vec2 centered = coords_geo.xy - vec2(0.5);
+                vec2 remapped = vec2(centered.x / w_scale, centered.y / h_scale) + vec2(0.5);
+
+                if (remapped.x < 0.0 || remapped.x > 1.0 || remapped.y < 0.0 || remapped.y > 1.0) {
+                    return vec4(0.0);
+                }
+
+                vec3 coords_tex = niri_geo_to_tex * vec3(remapped, 1.0);
+                return texture2D(niri_tex, coords_tex.st) * p;
+            }
+        "
+    }
+
+    window-close {
+        duration-ms 240
+        curve "linear"
+        custom-shader r"
+            vec4 close_color(vec3 coords_geo, vec3 size_geo) {
+                float p = niri_clamped_progress;
+                float p1 = clamp(p / 0.60, 0.0, 1.0);
+                float p2 = clamp((p - 0.50) / 0.50, 0.0, 1.0);
+
+                float h_scale = max(0.004, 1.0 - p1);
+                float w_scale = max(0.004, 1.0 - p2);
+
+                vec2 centered = coords_geo.xy - vec2(0.5);
+                vec2 remapped = vec2(centered.x / w_scale, centered.y / h_scale) + vec2(0.5);
+
+                if (remapped.x < 0.0 || remapped.x > 1.0 || remapped.y < 0.0 || remapped.y > 1.0) {
+                    return vec4(0.0);
+                }
+
+                vec3 coords_tex = niri_geo_to_tex * vec3(remapped, 1.0);
+                vec4 color = texture2D(niri_tex, coords_tex.st);
+
+                float glow = (1.0 - abs(coords_geo.y - 0.5) * 2.0) * p1 * 0.35;
+                color.rgb += vec3(glow) * color.a;
+
+                return color * (1.0 - p2);
+            }
+        "
+    }
+}

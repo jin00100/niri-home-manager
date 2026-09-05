@@ -1,0 +1,66 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+ANIM_DIR="$HOME/.config/niri/animations"
+ACTIVE_LINK="$ANIM_DIR/active.kdl"
+
+declare -A ANIMS=(
+    ["Smoke Mist     (Fluid Dispersion)"]="anim-smoke.kdl"
+    ["Retro CRT     (TV Collapse)"]="anim-crt.kdl"
+    ["Fall & Rotate (Physics Gravity)"]="anim-fall-rotate.kdl"
+    ["Circle Iris   (Camera Aperture)"]="anim-circle.kdl"
+    ["Pixel Dissolve (Digital Particles)"]="anim-dissolve.kdl"
+    ["Random Shuffle (Mystery Dice)"]="anim-random.kdl"
+    ["Default Smooth (Clean Minimal)"]="anim-default.kdl"
+)
+
+if [[ $# -ge 1 ]]; then
+    target="$1"
+    case "$target" in
+        smoke|wave|liquid|anim-smoke*) choice="anim-smoke.kdl"; name="Smoke Mist" ;;
+        crt|tv|anim-crt*) choice="anim-crt.kdl"; name="Retro CRT" ;;
+        fall*|rotate|physics|anim-fall*) choice="anim-fall-rotate.kdl"; name="Fall & Rotate" ;;
+        circle*|iris|anim-circle*) choice="anim-circle.kdl"; name="Circle Iris" ;;
+        dissolve*|pixel*|anim-dissolve*) choice="anim-dissolve.kdl"; name="Pixel Dissolve" ;;
+        random*|dice|shuffle|anim-random*) choice="anim-random.kdl"; name="Random Shuffle" ;;
+        default*|clean*|anim-default*) choice="anim-default.kdl"; name="Default Smooth" ;;
+        *) echo "Unknown animation: $target"; exit 1 ;;
+    esac
+else
+    MENU_ITEMS=$(printf "%s\n" \
+        "Smoke Mist     (Fluid Dispersion)" \
+        "Retro CRT     (TV Collapse)" \
+        "Fall & Rotate (Physics Gravity)" \
+        "Circle Iris   (Camera Aperture)" \
+        "Pixel Dissolve (Digital Particles)" \
+        "Random Shuffle (Mystery Dice)" \
+        "Default Smooth (Clean Minimal)"
+    )
+
+    # Pure English labels: zero font-fallback issues with Gabarito
+    SELECTED=$(echo "$MENU_ITEMS" | fuzzel --dmenu \
+        --prompt="Animation: " \
+        --placeholder="Select window animation..." \
+        --lines=7 \
+        --width=36 \
+        --horizontal-pad=24 \
+        --vertical-pad=16 \
+        --inner-pad=10 \
+        --selection-radius=12 \
+        --line-height=26) || exit 0
+
+    [[ -n "$SELECTED" ]] || exit 0
+
+    choice="${ANIMS[$SELECTED]:-}"
+    [[ -n "$choice" ]] || exit 1
+    name="$SELECTED"
+fi
+
+# Switch active symlink
+ln -sf "$ANIM_DIR/$choice" "$ACTIVE_LINK"
+
+# Instant config reload via niri IPC
+niri msg action load-config-file >/dev/null 2>&1 || true
+
+# System notification with iNiR styling
+notify-send -a "iNiR" "Window Animation" "Applied: ${name}" -i preferences-desktop-theme -t 2000 || true

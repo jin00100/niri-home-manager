@@ -1,0 +1,54 @@
+pragma Singleton
+pragma ComponentBehavior: Bound
+
+import QtQuick
+import Quickshell.Services.Mpris
+import qs.services
+import qs.modules.common
+
+Item {
+    id: root
+
+    readonly property MprisPlayer player: MprisController.activePlayer
+    readonly property bool isYtMusicActive: false
+    readonly property string sourceUrl: MprisController.effectiveArtUrl(root.player)
+    readonly property string title: root.player?.trackTitle ?? ""
+    readonly property string artist: root.player?.trackArtist ?? ""
+    readonly property string album: root.player?.trackAlbum ?? ""
+    readonly property bool ready: artworkResolver.ready
+    readonly property string displaySource: artworkResolver.displaySource
+    readonly property string cacheDirectory: Directories.coverArt
+
+    function refresh(): void {
+        artworkResolver.refresh();
+    }
+
+    Connections {
+        target: root.player
+
+        function onTrackArtUrlChanged(): void {
+            Qt.callLater(root.refresh);
+        }
+
+        function onTrackTitleChanged(): void {
+            Qt.callLater(root.refresh);
+        }
+
+        function onTrackArtistChanged(): void {
+            Qt.callLater(root.refresh);
+        }
+
+        function onTrackAlbumChanged(): void {
+            Qt.callLater(root.refresh);
+        }
+    }
+
+    MediaArtworkResolver {
+        id: artworkResolver
+        sourceUrl: root.sourceUrl
+        title: root.title
+        artist: root.artist
+        album: root.album
+        cacheDirectory: root.cacheDirectory
+    }
+}

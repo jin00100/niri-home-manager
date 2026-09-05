@@ -1,0 +1,16 @@
+# Ghostty configuration ported from home_env_dotfiles
+font-family = "JetBrains Mono Nerd Font"
+font-size = 11
+
+window-width = 150
+window-height = 60
+window-decoration = auto
+background-opacity = 0.85
+theme = Dracula
+term = xterm-256color
+
+cursor-style = block
+cursor-style-blink = true
+
+shell-integration = fish
+shell-integration-features = no-cursor

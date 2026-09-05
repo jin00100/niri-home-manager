@@ -1,0 +1,12 @@
+// ── Default Smooth [Default Smooth] ────────────────────────────────────────────────
+animations {
+    window-open {
+        duration-ms 180
+        curve "ease-out-quad"
+    }
+
+    window-close {
+        duration-ms 160
+        curve "ease-out-quad"
+    }
+}

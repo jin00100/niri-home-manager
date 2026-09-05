@@ -1,0 +1,86 @@
+// ── Random Shuffle [Random Shuffle] ──────────────────────────────────────────────────
+animations {
+    window-open {
+        duration-ms 250
+        curve "linear"
+        custom-shader r"
+            vec4 open_color(vec3 coords_geo, vec3 size_geo) {
+                if (coords_geo.x < 0.0 || coords_geo.x > 1.0 || coords_geo.y < 0.0 || coords_geo.y > 1.0) {
+                    return vec4(0.0);
+                }
+                if (niri_random_seed < 0.33) {
+                    // Circle Iris
+                    vec2 coords = (coords_geo.xy - vec2(0.5, 0.5)) * size_geo.xy * 2.0;
+                    coords = coords / length(size_geo.xy);
+                    float p = niri_clamped_progress;
+                    if (p * p <= dot(coords, coords)) return vec4(0.0);
+                    return texture2D(niri_tex, (niri_geo_to_tex * coords_geo).st) * p;
+                } else if (niri_random_seed < 0.66) {
+                    // CRT
+                    float p = niri_clamped_progress;
+                    float p_w = clamp(p / 0.35, 0.0, 1.0);
+                    float p_h = clamp((p - 0.25) / 0.75, 0.0, 1.0);
+                    float w_scale = max(0.005, p_w);
+                    float h_scale = max(0.005, p_h);
+                    vec2 centered = coords_geo.xy - vec2(0.5);
+                    vec2 remapped = vec2(centered.x / w_scale, centered.y / h_scale) + vec2(0.5);
+                    if (remapped.x < 0.0 || remapped.x > 1.0 || remapped.y < 0.0 || remapped.y > 1.0) return vec4(0.0);
+                    return texture2D(niri_tex, (niri_geo_to_tex * vec3(remapped, 1.0)).st) * p;
+                } else {
+                    // Scale
+                    float scale = max(0.001, (niri_progress / 2.0 + 0.5));
+                    vec2 centered = (coords_geo.xy - vec2(0.5)) / scale + vec2(0.5);
+                    if (centered.x < 0.0 || centered.x > 1.0 || centered.y < 0.0 || centered.y > 1.0) return vec4(0.0);
+                    return texture2D(niri_tex, (niri_geo_to_tex * vec3(centered, 1.0)).st) * niri_clamped_progress;
+                }
+            }
+        "
+    }
+
+    window-close {
+        duration-ms 260
+        curve "linear"
+        custom-shader r"
+            vec4 close_color(vec3 coords_geo, vec3 size_geo) {
+                if (coords_geo.x < 0.0 || coords_geo.x > 1.0 || coords_geo.y < 0.0 || coords_geo.y > 1.0) {
+                    return vec4(0.0);
+                }
+                if (niri_random_seed < 0.33) {
+                    // Fall & Rotate
+                    float progress = niri_clamped_progress * niri_clamped_progress;
+                    vec2 coords = (coords_geo.xy - vec2(0.5, 1.0)) * size_geo.xy;
+                    coords.y -= progress * 240.0;
+                    float random = (niri_random_seed - 0.16) * 6.0;
+                    float max_angle = 0.08 * random;
+                    float angle = progress * max_angle;
+                    mat2 rotate = mat2(cos(angle), -sin(angle), sin(angle), cos(angle));
+                    coords = rotate * coords;
+                    vec2 remapped = coords / size_geo.xy + vec2(0.5, 1.0);
+                    if (remapped.x < 0.0 || remapped.x > 1.0 || remapped.y < 0.0 || remapped.y > 1.0) return vec4(0.0);
+                    return texture2D(niri_tex, (niri_geo_to_tex * vec3(remapped, 1.0)).st) * (1.0 - niri_clamped_progress);
+                } else if (niri_random_seed < 0.66) {
+                    // CRT TV off
+                    float p = niri_clamped_progress;
+                    float p1 = clamp(p / 0.60, 0.0, 1.0);
+                    float p2 = clamp((p - 0.50) / 0.50, 0.0, 1.0);
+                    float h_scale = max(0.004, 1.0 - p1);
+                    float w_scale = max(0.004, 1.0 - p2);
+                    vec2 centered = coords_geo.xy - vec2(0.5);
+                    vec2 remapped = vec2(centered.x / w_scale, centered.y / h_scale) + vec2(0.5);
+                    if (remapped.x < 0.0 || remapped.x > 1.0 || remapped.y < 0.0 || remapped.y > 1.0) return vec4(0.0);
+                    vec4 color = texture2D(niri_tex, (niri_geo_to_tex * vec3(remapped, 1.0)).st);
+                    float glow = (1.0 - abs(coords_geo.y - 0.5) * 2.0) * p1 * 0.35;
+                    color.rgb += vec3(glow) * color.a;
+                    return color * (1.0 - p2);
+                } else {
+                    // Circle shrink
+                    vec2 coords = (coords_geo.xy - vec2(0.5, 0.5)) * size_geo.xy * 2.0;
+                    coords = coords / length(size_geo.xy);
+                    float p = 1.0 - niri_clamped_progress;
+                    if (p * p <= dot(coords, coords)) return vec4(0.0);
+                    return texture2D(niri_tex, (niri_geo_to_tex * coords_geo).st) * p;
+                }
+            }
+        "
+    }
+}

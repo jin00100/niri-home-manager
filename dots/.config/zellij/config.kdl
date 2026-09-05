@@ -1,0 +1,56 @@
+theme "cyber-blue"
+default_layout "default"
+pane_frames true
+simplified_ui false
+mirror_session_to_terminal_title true
+mouse_mode true
+copy_on_select true
+copy_clipboard "system"
+copy_command "true"
+
+keybinds {
+    unbind "Ctrl b" "Ctrl h" "Alt f" "Alt b"
+
+    normal {
+        bind "Ctrl g" { SwitchToMode "Locked"; }
+    }
+    locked {
+        bind "Ctrl g" { SwitchToMode "Normal"; }
+    }
+
+    tab {
+        unbind "x"
+        bind "Ctrl x" {
+            CloseTab
+            SwitchToMode "Normal"
+        }
+    }
+
+    shared_except "locked" {
+        bind "Alt h" { MoveFocusOrTab "Left"; }
+        bind "Alt l" { MoveFocusOrTab "Right"; }
+        bind "Alt j" { MoveFocus "Down"; }
+        bind "Alt k" { MoveFocus "Up"; }
+        bind "Alt =" { Resize "Increase"; }
+        bind "Alt -" { Resize "Decrease"; }
+        bind "Alt n" { NewPane "Right"; }
+        bind "Alt i" { MoveTab "Left"; }
+        bind "Alt o" { MoveTab "Right"; }
+    }
+}
+
+themes {
+    cyber-blue {
+        fg 192 202 245
+        bg 26 27 38
+        black 21 22 30
+        red 247 118 142
+        green 122 162 247
+        yellow 125 207 255
+        blue 122 162 247
+        magenta 187 154 247
+        cyan 125 207 255
+        white 169 177 214
+        orange 187 154 247
+    }
+}

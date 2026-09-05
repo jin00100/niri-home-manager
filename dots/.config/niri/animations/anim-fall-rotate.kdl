@@ -1,0 +1,41 @@
+// ── Fall & Rotate [Fall & Rotate] ──────────────────────────────────────────────────
+animations {
+    window-open {
+        duration-ms 220
+        curve "ease-out-expo"
+        custom-shader r"
+            vec4 open_color(vec3 coords_geo, vec3 size_geo) {
+                float scale = max(0.001, (niri_progress / 2.0 + 0.5));
+                vec2 centered = (coords_geo.xy - vec2(0.5)) / scale + vec2(0.5);
+                if (centered.x < 0.0 || centered.x > 1.0 || centered.y < 0.0 || centered.y > 1.0) {
+                    return vec4(0.0);
+                }
+                vec3 coords_tex = niri_geo_to_tex * vec3(centered, 1.0);
+                return texture2D(niri_tex, coords_tex.st) * niri_clamped_progress;
+            }
+        "
+    }
+
+    window-close {
+        duration-ms 250
+        curve "linear"
+        custom-shader r"
+            vec4 close_color(vec3 coords_geo, vec3 size_geo) {
+                float progress = niri_clamped_progress * niri_clamped_progress;
+                vec2 coords = (coords_geo.xy - vec2(0.5, 1.0)) * size_geo.xy;
+                coords.y -= progress * 240.0;
+                float random = (niri_random_seed - 0.5) * 2.0;
+                float max_angle = 0.08 * random;
+                float angle = progress * max_angle;
+                mat2 rotate = mat2(cos(angle), -sin(angle), sin(angle), cos(angle));
+                coords = rotate * coords;
+                vec2 remapped = coords / size_geo.xy + vec2(0.5, 1.0);
+                if (remapped.x < 0.0 || remapped.x > 1.0 || remapped.y < 0.0 || remapped.y > 1.0) {
+                    return vec4(0.0);
+                }
+                vec3 coords_tex = niri_geo_to_tex * vec3(remapped, 1.0);
+                return texture2D(niri_tex, coords_tex.st) * (1.0 - niri_clamped_progress);
+            }
+        "
+    }
+}
