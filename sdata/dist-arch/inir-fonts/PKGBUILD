@@ -7,6 +7,9 @@ license=('GPL-3.0-only')
 depends=(
   fontconfig
   noto-fonts-emoji
+  noto-fonts-cjk
+  wqy-microhei
+  wqy-zenhei
   ttf-dejavu
   ttf-liberation
   ttf-roboto

@@ -556,6 +556,7 @@ check_fonts() {
         "Gabarito:Gabarito:important"
         "Oxanium:Oxanium:important"
         "Noto Color Emoji:Noto Color Emoji:important"
+        "Noto Sans CJK|WenQuanYi:Noto Sans CJK:important"
     )
 
     local optional_fonts=(
@@ -665,6 +666,8 @@ check_fonts() {
                     _try_install_font_package "ttf-oxanium" "Oxanium" && ((fixed++)) || true ;;
                 "Noto Color Emoji")
                     _try_install_font_package "noto-fonts-emoji" "Noto Color Emoji" && ((fixed++)) || true ;;
+                "Noto Sans CJK")
+                    _try_install_font_package "noto-fonts-cjk" "Noto Sans CJK" && ((fixed++)) || true ;;
             esac
         done
 

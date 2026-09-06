@@ -685,6 +685,9 @@ DEBIAN_FONT_PKGS=(
   fonts-dejavu
   fonts-liberation
   fonts-noto-color-emoji
+  fonts-noto-cjk
+  fonts-wqy-microhei
+  fonts-wqy-zenhei
   fonts-jetbrains-mono
   
   # Launcher

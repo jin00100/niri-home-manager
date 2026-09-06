@@ -133,6 +133,9 @@ depends=(
 
   #--- Theming ---
   noto-fonts-emoji
+  noto-fonts-cjk
+  wqy-microhei
+  wqy-zenhei
   ttf-material-symbols-variable
   ttf-jetbrains-mono-nerd
   adw-gtk-theme

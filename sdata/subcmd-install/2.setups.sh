@@ -262,6 +262,28 @@ PORTAL_EOF
 }
 
 #####################################################################################
+# CJK Locales (Chinese, Japanese, Korean)
+#####################################################################################
+function setup_cjk_locales(){
+  tui_info "Setting up CJK language locales..."
+  if [[ -f /etc/locale.gen ]] && command -v locale-gen &>/dev/null; then
+    local cjk_changed=false
+    for loc in "zh_CN.UTF-8 UTF-8" "ja_JP.UTF-8 UTF-8" "ko_KR.UTF-8 UTF-8"; do
+      if grep -q "^#${loc}" /etc/locale.gen 2>/dev/null; then
+        pkg_sudo sed -i "s/^#${loc}/${loc}/" /etc/locale.gen 2>/dev/null || true
+        cjk_changed=true
+      fi
+    done
+    if [[ "$cjk_changed" == "true" ]]; then
+      pkg_sudo locale-gen >/dev/null 2>&1 || true
+      log_success "CJK locales enabled and generated (zh_CN, ja_JP, ko_KR)"
+    else
+      log_info "CJK locales already configured"
+    fi
+  fi
+}
+
+#####################################################################################
 # Run setups
 #####################################################################################
 showfun setup_user_groups
@@ -272,6 +294,9 @@ v setup_systemd_services
 
 showfun setup_desktop_settings
 v setup_desktop_settings
+
+showfun setup_cjk_locales
+v setup_cjk_locales
 
 # Super-tap daemon (legacy - optional)
 # Disabled by default in favor of Mod+Space ii overview.

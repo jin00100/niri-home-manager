@@ -134,6 +134,7 @@ window-rule {
 window-rule {
     match app-id=r#"^(google-chrome|Google-chrome|chromium|chromium-browser)$"#
     open-maximized false
+    open-fullscreen false
     default-column-width { proportion 0.5; }
 }
 

@@ -274,8 +274,11 @@ OFFICIAL_PACKAGES=(
   eza
   xwayland-satellite
   
-  # Emoji font (CRITICAL — overview search, notifications, etc.)
+  # Fonts (Emoji & CJK - Chinese, Japanese, Korean)
   noto-fonts-emoji
+  noto-fonts-cjk
+  wqy-microhei
+  wqy-zenhei
   
   # File manager
   nautilus
