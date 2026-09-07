@@ -40,10 +40,10 @@ window-rule {
     open-floating true
 }
 
-// Chrome / Chromium: prevent auto-maximization or fullscreen, open as 50% width column (align side-by-side like terminals)
+// Chrome / Chromium: open maximized by default (full width like Hyprland, no overflow; toggle with Super+M)
 window-rule {
     match app-id=r#"^(google-chrome|Google-chrome|chromium|chromium-browser)$"#
-    open-maximized false
+    open-maximized true
     open-fullscreen false
     default-column-width { proportion 0.5; }
 }

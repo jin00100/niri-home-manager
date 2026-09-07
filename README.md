@@ -102,7 +102,8 @@ Everything is configured via the interactive settings GUI (`Super+,`) or standar
 | <kbd>Super</kbd> + <kbd>Alt</kbd> + <kbd>A</kbd> | Window Shader Animation Switcher |
 | <kbd>Super</kbd> + <kbd>T</kbd> / <kbd>Return</kbd> | Launch Default Terminal |
 | <kbd>Super</kbd> + <kbd>Q</kbd> | Close Window (with unsaved work confirmation) |
-| <kbd>Super</kbd> + <kbd>M</kbd> | Fullscreen Window Toggle |
+| <kbd>Super</kbd> + <kbd>M</kbd> | Maximize Column Toggle (Preserves gaps) |
+| <kbd>Super</kbd> + <kbd>D</kbd> | Maximize Window to Edges Toggle (No gaps) |
 | <kbd>Super</kbd> + <kbd>/</kbd> | Interactive Keybind Cheatsheet |
 | <kbd>Ctrl</kbd> + <kbd>Space</kbd> | Toggle Input Method (Pinyin / English) |
 

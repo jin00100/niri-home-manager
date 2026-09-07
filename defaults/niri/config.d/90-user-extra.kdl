@@ -43,5 +43,6 @@ binds {
     Mod+Alt+A  { spawn "niri-anim-switcher"; }
     Mod+B      { spawn "google-chrome-stable"; }
     Mod+Ctrl+B { spawn "inir" "bar" "toggle"; }
-    Mod+M      { fullscreen-window; }
+    Mod+M      { maximize-column; }
+    Mod+D      { maximize-window-to-edges; }
 }
