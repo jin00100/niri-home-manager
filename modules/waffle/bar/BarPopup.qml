@@ -209,6 +209,8 @@ Loader {
             exclusiveZone: 0
             WlrLayershell.layer: WlrLayer.Top
             WlrLayershell.namespace: "quickshell:barPopupBackdrop"
+            Item { id: inactiveBackdropMask; width: 0; height: 0 }
+            mask: Region { item: clickOutsideBackdrop.visible ? clickOutsideArea : inactiveBackdropMask }
             
             anchors {
                 top: true
@@ -218,6 +220,7 @@ Loader {
             }
             
             MouseArea {
+                id: clickOutsideArea
                 anchors.fill: parent
                 onClicked: {
                     root.close();

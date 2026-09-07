@@ -299,6 +299,9 @@ Scope {
             right: true
         }
 
+        Item { id: inactiveBackdropMask; width: 0; height: 0 }
+        mask: Region { item: GlobalStates.clipboardOpen ? backdropClickArea : inactiveBackdropMask }
+
         Item {
             id: keyHandler
             anchors.fill: parent
@@ -403,6 +406,7 @@ Scope {
 
         // Click outside the panel to close
         MouseArea {
+            id: backdropClickArea
             anchors.fill: parent
             acceptedButtons: Qt.LeftButton
             onClicked: mouse => {

@@ -83,9 +83,12 @@ PopupWindow {
         exclusiveZone: 0
         WlrLayershell.layer: WlrLayer.Top
         WlrLayershell.namespace: "quickshell:m3TrayMenuBackdrop"
+        Item { id: inactiveBackdropMask; width: 0; height: 0 }
+        mask: Region { item: root.visible && CompositorService.isNiri ? clickOutsideArea : inactiveBackdropMask }
         anchors { top: true; bottom: true; left: true; right: true }
 
         MouseArea {
+            id: clickOutsideArea
             anchors.fill: parent
             onClicked: root.close()
         }

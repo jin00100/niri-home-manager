@@ -84,10 +84,13 @@ LazyLoader {
         exclusiveZone: 0
         WlrLayershell.layer: WlrLayer.Overlay
         WlrLayershell.namespace: "quickshell:m3-popup-catcher"
+        Item { id: inactiveBackdropMask; width: 0; height: 0 }
+        mask: Region { item: root.active && root.closeOnOutsideClick ? clickOutsideArea : inactiveBackdropMask }
         WlrLayershell.exclusionMode: ExclusionMode.Ignore
         anchors { top: true; bottom: true; left: true; right: true }
 
         MouseArea {
+            id: clickOutsideArea
             anchors.fill: parent
             acceptedButtons: Qt.AllButtons
             onClicked: root.requestClose()

@@ -62,11 +62,13 @@ Loader {
 
         // Close on click outside (Backdrop)
         PanelWindow {
-            visible: true
+            visible: root.active && !popupWindow.closing
             color: "transparent"
             exclusiveZone: 0
             WlrLayershell.layer: WlrLayer.Top
             WlrLayershell.namespace: "quickshell:widgetSettings"
+            Item { id: inactiveBackdropMask; width: 0; height: 0 }
+            mask: Region { item: root.active && !popupWindow.closing ? clickOutsideArea : inactiveBackdropMask }
             
             anchors {
                 top: true
@@ -76,6 +78,7 @@ Loader {
             }
             
             MouseArea {
+                id: clickOutsideArea
                 anchors.fill: parent
                 acceptedButtons: Qt.AllButtons
                 onPressed: (event) => {

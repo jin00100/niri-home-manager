@@ -76,6 +76,9 @@ Scope {
             left: true
         }
 
+        Item { id: inactiveBackdropMask; width: 0; height: 0 }
+        mask: Region { item: GlobalStates.dashboardOpen ? backdropClickArea : inactiveBackdropMask }
+
         CompositorFocusGrab {
             id: grab
             windows: [ panelRoot ]
