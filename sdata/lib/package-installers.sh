@@ -950,6 +950,9 @@ end
 
 if status is-interactive
 
+    # Ensure local bin is in PATH
+    fish_add_path ~/.local/bin
+
     # No greeting
     set fish_greeting
 
@@ -979,9 +982,6 @@ if status is-interactive
     alias clear "printf '\033[2J\033[3J\033[1;1H'"
     alias q 'inir run'
 
-    # Add local bin to PATH
-    fish_add_path ~/.local/bin
-
 end
 EOF
   fi
@@ -1000,6 +1000,9 @@ setup-bash-config(){
   # Create ii bash config
   cat > "$inir_config" << 'EOF'
 # ii shell integration - starship prompt and terminal colors
+
+# Add local bin to PATH
+export PATH="$HOME/.local/bin:$PATH"
 
 # Load terminal colors from ii theming
 if [[ -f ~/.local/state/quickshell/user/generated/terminal/sequences.txt ]]; then
@@ -1029,9 +1032,6 @@ elif [[ -x ~/.local/bin/eza ]]; then
     alias ls='~/.local/bin/eza --icons'
 fi
 alias q='inir run'
-
-# Add local bin to PATH
-export PATH="$HOME/.local/bin:$PATH"
 EOF
 
   # Add source line to .bashrc if not present
@@ -1064,6 +1064,9 @@ setup-zsh-config(){
   # Create ii zsh config
   cat > "$inir_config" << 'EOF'
 # ii shell integration - starship prompt and terminal colors
+
+# Add local bin to PATH
+export PATH="$HOME/.local/bin:$PATH"
 
 # Load terminal colors from ii theming
 if [[ -f ~/.local/state/quickshell/user/generated/terminal/sequences.txt ]]; then

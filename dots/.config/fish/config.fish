@@ -1,4 +1,7 @@
 if status is-interactive
+    # Ensure local bin is in PATH
+    fish_add_path ~/.local/bin
+
     # No greeting
     set fish_greeting
 
@@ -7,12 +10,14 @@ if status is-interactive
         starship init fish | source
     end
 
-    # Apply terminal color sequences (Material You from wallpaper)
-    if test -f ~/.local/state/quickshell/user/generated/terminal/sequences.txt
-        if test -x /bin/cat
-            /bin/cat ~/.local/state/quickshell/user/generated/terminal/sequences.txt 2>/dev/null
-        else
-            command cat ~/.local/state/quickshell/user/generated/terminal/sequences.txt 2>/dev/null
+    # Apply terminal color sequences (Material You from wallpaper) - skip in SSH sessions
+    if not set -q SSH_CLIENT; and not set -q SSH_TTY
+        if test -f ~/.local/state/quickshell/user/generated/terminal/sequences.txt
+            if test -x /bin/cat
+                /bin/cat ~/.local/state/quickshell/user/generated/terminal/sequences.txt 2>/dev/null
+            else
+                command cat ~/.local/state/quickshell/user/generated/terminal/sequences.txt 2>/dev/null
+            end
         end
     end
 
