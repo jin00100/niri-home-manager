@@ -260,7 +260,7 @@ binds {
     Mod+Shift+A { spawn "qs" "-c" "inir" "ipc" "call" "region" "search"; }
     
     // ii Wallpaper selector
-    Ctrl+Alt+T { spawn "qs" "-c" "inir" "ipc" "call" "wallpaperSelector" "toggle"; }
+    Mod+Ctrl+W { spawn "qs" "-c" "inir" "ipc" "call" "wallpaperSelector" "toggle"; }
     
     // ii Settings
     Mod+Comma { spawn "qs" "-c" "inir" "ipc" "call" "settings" "open"; }

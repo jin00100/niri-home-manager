@@ -874,9 +874,17 @@ Singleton {
 
     function randomFromCurrentFolder(darkMode = Appearance.m3colors.darkmode, monitorName = "", target = "") {
         if (folderModel.count === 0) return
-        const randomIndex = Math.floor(Math.random() * folderModel.count)
-        const filePath = folderModel.get(randomIndex, "filePath")
-        root.select(filePath, darkMode, monitorName, target)
+        const candidates = []
+        for (let i = 0; i < folderModel.count; ++i) {
+            if (folderModel.isFolder(i)) continue
+            const p = folderModel.get(i, "filePath")
+                || FileUtils.trimFileProtocol(String(folderModel.get(i, "fileURL") ?? ""))
+            if (p && p.length > 0)
+                candidates.push(p)
+        }
+        if (candidates.length === 0) return
+        const randomIndex = Math.floor(Math.random() * candidates.length)
+        root.select(candidates[randomIndex], darkMode, monitorName, target)
     }
 
     // Detect workspace range for a monitor (Niri-specific)
@@ -1149,75 +1157,126 @@ Singleton {
 
     // ── Auto wallpaper cycling ──────────────────────────────────────────
     readonly property bool autoWallpaperEnabled: Config.options?.background?.autoWallpaper?.enable ?? false
-    readonly property int autoWallpaperInterval: Config.options?.background?.autoWallpaper?.intervalMinutes ?? 30
+    readonly property int autoWallpaperInterval: Math.max(1, Config.options?.background?.autoWallpaper?.intervalMinutes ?? 30)
     readonly property bool autoWallpaperGenerateColors: Config.options?.background?.autoWallpaper?.generateColors ?? true
     readonly property string autoWallpaperFolder: Config.options?.background?.autoWallpaper?.folder ?? ""
 
+    property real _lastAutoWallpaperTimestamp: Date.now()
+    property bool _pendingShuffleOnUnlock: false
+
+    onAutoWallpaperEnabledChanged: {
+        if (root.autoWallpaperEnabled) {
+            root._lastAutoWallpaperTimestamp = Date.now()
+            root._pendingShuffleOnUnlock = false
+        }
+    }
+
+    function _normalizeFolderPath(folderPath: string): string {
+        let p = FileUtils.trimFileProtocol(String(folderPath ?? "")).trim()
+        if (p.startsWith("~"))
+            p = Directories.homePath + p.slice(1)
+        return p
+    }
+
+    FolderListModel {
+        id: autoWallpaperFolderModel
+        folder: {
+            const custom = root._normalizeFolderPath(root.autoWallpaperFolder)
+            if (custom.length > 0)
+                return Qt.resolvedUrl("file://" + custom)
+            return Qt.resolvedUrl(root.defaultFolder)
+        }
+        nameFilters: root.extensions.map(ext => `*.${ext}`)
+        caseSensitive: false
+        showDirs: false
+        showDotAndDotDot: false
+        showHidden: false
+        showOnlyReadable: true
+        sortField: FolderListModel.Name
+    }
+
     Timer {
-        id: autoWallpaperTimer
-        interval: root.autoWallpaperInterval * 60 * 1000
-        running: root.autoWallpaperEnabled && !GlobalStates.screenLocked
+        id: autoWallpaperTicker
+        interval: 15000
+        running: root.autoWallpaperEnabled
         repeat: true
-        onTriggered: root._cycleAutoWallpaper()
-    }
-
-    function _cycleAutoWallpaper() {
-        // Use custom folder or current folder
-        const customFolder = root.autoWallpaperFolder
-        if (customFolder && customFolder.length > 0) {
-            // Switch to custom folder temporarily, pick random, then switch back
-            const previousFolder = root.effectiveDirectory
-            _autoPickProc._previousFolder = previousFolder
-            _autoPickProc._targetFolder = customFolder
-            _autoPickProc.command = ["test", "-d", customFolder]
-            _autoPickProc.running = true
-            return
-        }
-        // Use current folder
-        if (folderModel.count === 0) return
-        _pickRandomAndApply()
-    }
-
-    function _pickRandomAndApply() {
-        if (folderModel.count === 0) return
-        const currentPath = Config.options?.background?.wallpaperPath ?? ""
-        let attempts = 0
-        let randomIndex, filePath
-        // Try to pick a different wallpaper than the current one
-        do {
-            randomIndex = Math.floor(Math.random() * folderModel.count)
-            filePath = folderModel.get(randomIndex, "filePath")
-            attempts++
-        } while (filePath === currentPath && attempts < 5 && folderModel.count > 1)
-
-        if (!filePath) return
-
-        if (root.autoWallpaperGenerateColors) {
-            root.apply(filePath, Appearance.m3colors.darkmode)
-        } else {
-            // Just change wallpaper path without running color generation
-            Config.setNestedValue("background.wallpaperPath", filePath)
-        }
-    }
-
-    Process {
-        id: _autoPickProc
-        property string _previousFolder: ""
-        property string _targetFolder: ""
-        onExited: (exitCode) => {
-            if (exitCode === 0) {
-                // Folder exists, temporarily set it and pick random
-                root._setFolderModelDirectory(Qt.resolvedUrl(_autoPickProc._targetFolder))
-                // Wait for folder model to update before picking
-                _autoPickFolderDelay.restart()
+        onTriggered: {
+            if (!root.autoWallpaperEnabled) return
+            const intervalMs = root.autoWallpaperInterval * 60 * 1000
+            const elapsed = Date.now() - root._lastAutoWallpaperTimestamp
+            if (elapsed >= intervalMs) {
+                if (GlobalStates.screenLocked) {
+                    root._pendingShuffleOnUnlock = true
+                    return
+                }
+                root._cycleAutoWallpaper()
             }
         }
     }
 
-    Timer {
-        id: _autoPickFolderDelay
-        interval: 500
-        onTriggered: root._pickRandomAndApply()
+    Connections {
+        target: GlobalStates
+        function onScreenLockedChanged() {
+            if (!GlobalStates.screenLocked && root._pendingShuffleOnUnlock) {
+                root._pendingShuffleOnUnlock = false
+                root._cycleAutoWallpaper()
+            }
+        }
+    }
+
+    function _cycleAutoWallpaper(): void {
+        root._lastAutoWallpaperTimestamp = Date.now()
+        root._pendingShuffleOnUnlock = false
+        root._pickRandomAndApply()
+    }
+
+    function shuffleNow(): void {
+        root._cycleAutoWallpaper()
+    }
+
+    function _pickRandomAndApply(): void {
+        const count = autoWallpaperFolderModel.count
+        if (count === 0) {
+            if (folderModel.count > 0)
+                root.randomFromCurrentFolder(Appearance.m3colors.darkmode)
+            return
+        }
+
+        const currentPath = FileUtils.trimFileProtocol(String(Config.options?.background?.wallpaperPath ?? ""))
+        let attempts = 0
+        let randomIndex = -1
+        let filePath = ""
+
+        do {
+            randomIndex = Math.floor(Math.random() * count)
+            filePath = autoWallpaperFolderModel.get(randomIndex, "filePath")
+            if (!filePath) {
+                const rawUrl = autoWallpaperFolderModel.get(randomIndex, "fileURL")
+                    || autoWallpaperFolderModel.get(randomIndex, "fileUrl")
+                if (rawUrl) {
+                    filePath = FileUtils.trimFileProtocol(String(rawUrl))
+                } else {
+                    const fn = autoWallpaperFolderModel.get(randomIndex, "fileName")
+                    if (fn) {
+                        const baseDir = FileUtils.trimFileProtocol(String(autoWallpaperFolderModel.folder))
+                        filePath = (baseDir.endsWith("/") ? baseDir : baseDir + "/") + fn
+                    }
+                }
+            }
+            attempts++
+        } while (filePath === currentPath && attempts < 10 && count > 1)
+
+        if (!filePath || filePath.length === 0) return
+
+        if (root.autoWallpaperGenerateColors) {
+            root.apply(filePath, Appearance.m3colors.darkmode)
+        } else {
+            const normalizedPath = FileUtils.trimFileProtocol(filePath)
+            root.requestWallpaperBlurTransition()
+            Config.setNestedValue("background.wallpaperPath", normalizedPath)
+            Config.setNestedValue("background.thumbnailPath", "")
+            root.changed()
+        }
     }
     // ── End auto wallpaper cycling ──────────────────────────────────────
 }

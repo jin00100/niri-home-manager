@@ -17,6 +17,27 @@ ContentPage {
     property string activeSection: "displays"
     property bool pageReady: false
 
+    function activateSettingsSearchSection(section: string): bool {
+        const s = String(section || "").toLowerCase()
+        if (s.indexOf("rule") >= 0 || s.indexOf("opacity") >= 0 || s.indexOf("corner") >= 0 || s.indexOf("radius") >= 0) {
+            root.activeSection = "rules"
+            return true
+        } else if (s.indexOf("layout") >= 0 || s.indexOf("focus") >= 0 || s.indexOf("shadow") >= 0 || s.indexOf("strut") >= 0 || s.indexOf("clip") >= 0 || s.indexOf("column") >= 0) {
+            root.activeSection = "layout"
+            return true
+        } else if (s.indexOf("input") >= 0 || s.indexOf("keyboard") >= 0 || s.indexOf("mouse") >= 0 || s.indexOf("touchpad") >= 0) {
+            root.activeSection = "input"
+            return true
+        } else if (s.indexOf("anim") >= 0) {
+            root.activeSection = "animations"
+            return true
+        } else if (s.indexOf("display") >= 0 || s.indexOf("monitor") >= 0 || s.indexOf("resolution") >= 0) {
+            root.activeSection = "displays"
+            return true
+        }
+        return false
+    }
+
     property var outputList: []
     property int selectedOutputIndex: 0
 

@@ -1658,6 +1658,20 @@ Singleton {
         },
         {
             pageIndex: 12, pageName: root.pages[12].name,
+            section: Translation.tr("Window Rules"),
+            label: Translation.tr("Inactive window opacity"),
+            description: Translation.tr("Transparency of unfocused windows (1.0 = fully opaque)"),
+            keywords: ["opacity", "transparency", "inactive", "window", "translucent", "glass", "alpha", "niri", "rules"]
+        },
+        {
+            pageIndex: 12, pageName: root.pages[12].name,
+            section: Translation.tr("Window Rules"),
+            label: Translation.tr("Corner radius"),
+            description: Translation.tr("Rounding applied to window corners (0 = square)"),
+            keywords: ["corner", "radius", "round", "rounding", "window", "niri", "rules"]
+        },
+        {
+            pageIndex: 12, pageName: root.pages[12].name,
             section: Translation.tr("Niri config status"),
             label: Translation.tr("Managed overrides status"),
             description: Translation.tr("Actionable managed overrides and extra files in Niri config"),

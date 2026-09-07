@@ -54,6 +54,8 @@ Scope {
     // ── Search system (full, same as settings.qml) ──
     property string overlaySearchText: ""
     property var overlaySearchResults: []
+    readonly property var pagesHost: panelLoader.item ? panelLoader.item.pagesHost : null
+    readonly property var searchField: panelLoader.item ? panelLoader.item.searchField : null
 
     // Navigation target for search results (no visual spotlight)
     property var searchTargetControl: null
@@ -184,7 +186,7 @@ Scope {
     function openOverlaySearchResult(entry) {
         // Clear search immediately
         overlaySearchText = "";
-        if (typeof overlaySearchField !== "undefined" && overlaySearchField) overlaySearchField.text = "";
+        if (root.searchField) root.searchField.text = "";
 
         // Reset any previous search target
         resetSearchTarget();
@@ -218,8 +220,9 @@ Scope {
     }
 
     function trySpotlight() {
-        const pageItem = overlayPagesHost.currentItem
-        if (pageItem && overlayPagesHost.currentIndex === pendingSpotlightPageIndex
+        const pagesHost = root.pagesHost
+        const pageItem = pagesHost ? pagesHost.currentItem : null
+        if (pageItem && pagesHost && pagesHost.currentIndex === pendingSpotlightPageIndex
                 && pendingSpotlightSection.length > 0
                 && typeof pageItem.activateSettingsSearchSection === "function")
             pageItem.activateSettingsSearchSection(pendingSpotlightSection)
@@ -291,6 +294,13 @@ Scope {
             }
         }
 
+        if (!control && pendingSpotlightSection.length > 0) {
+            control = SettingsSearchRegistry.findSectionControl(pendingSpotlightPageIndex, pendingSpotlightSection);
+        }
+        if (!control && pendingSpotlightLabel.length > 0) {
+            control = SettingsSearchRegistry.findSectionControl(pendingSpotlightPageIndex, pendingSpotlightLabel);
+        }
+
         if (control) {
             navigateToSearchControl(control);
         } else if (spotlightRetryCount < spotlightMaxRetries) {
@@ -313,6 +323,13 @@ Scope {
         if (typeof SettingsSearchRegistry !== "undefined") {
             SettingsSearchRegistry.activateTaskSectionForControl(control);
             SettingsSearchRegistry.expandSectionForControl(control);
+        }
+
+        // Focus the target control
+        if (typeof control.focusFromSettingsSearch === "function") {
+            control.focusFromSettingsSearch();
+        } else if (typeof control.forceActiveFocus === "function") {
+            control.forceActiveFocus();
         }
 
         // Find the parent Flickable (ContentPage/StyledFlickable)
@@ -421,6 +438,9 @@ Scope {
 
         sourceComponent: PanelWindow {
             id: settingsPanel
+
+            readonly property alias pagesHost: overlayPagesHost
+            readonly property alias searchField: overlaySearchField
 
             // Stay visible during the close-animation window so the exit morph
             // renders; the Loader tears down after closeAnimTimer fires.
@@ -1898,6 +1918,7 @@ Scope {
                             model: root.overlaySearchResults
                             clip: true
                             currentIndex: 0
+                            onModelChanged: currentIndex = 0
                             boundsBehavior: Flickable.StopAtBounds
 
                             Keys.onPressed: (event) => {
