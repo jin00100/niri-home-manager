@@ -9,7 +9,7 @@ if status is-interactive
 
     # Apply terminal color sequences (Material You from wallpaper)
     if test -f ~/.local/state/quickshell/user/generated/terminal/sequences.txt
-        cat ~/.local/state/quickshell/user/generated/terminal/sequences.txt
+        command cat ~/.local/state/quickshell/user/generated/terminal/sequences.txt
     end
 
     # Aliases
@@ -20,4 +20,10 @@ if status is-interactive
         alias ls 'eza --icons=auto'
     end
     alias q 'inir run'
+
+    # Welcome banner on interactive startup
+    if command -v welcome-msg &>/dev/null && not set -q _INIR_WELCOME_SHOWN
+        set -g _INIR_WELCOME_SHOWN 1
+        welcome-msg
+    end
 end

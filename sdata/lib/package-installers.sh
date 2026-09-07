@@ -960,7 +960,12 @@ if status is-interactive
 
     # Load terminal colors from ii theming
     if test -f ~/.local/state/quickshell/user/generated/terminal/sequences.txt
-        cat ~/.local/state/quickshell/user/generated/terminal/sequences.txt
+        command cat ~/.local/state/quickshell/user/generated/terminal/sequences.txt
+    end
+
+    # Welcome banner on interactive startup
+    if command -v welcome-msg > /dev/null
+        welcome-msg
     end
 
     # Aliases
@@ -994,7 +999,12 @@ setup-bash-config(){
 
 # Load terminal colors from ii theming
 if [[ -f ~/.local/state/quickshell/user/generated/terminal/sequences.txt ]]; then
-    cat ~/.local/state/quickshell/user/generated/terminal/sequences.txt
+    command cat ~/.local/state/quickshell/user/generated/terminal/sequences.txt
+fi
+
+# Welcome banner on interactive startup
+if [[ $- == *i* ]] && command -v welcome-msg &> /dev/null; then
+    welcome-msg
 fi
 
 # Use starship if available
@@ -1049,7 +1059,12 @@ setup-zsh-config(){
 
 # Load terminal colors from ii theming
 if [[ -f ~/.local/state/quickshell/user/generated/terminal/sequences.txt ]]; then
-    cat ~/.local/state/quickshell/user/generated/terminal/sequences.txt
+    command cat ~/.local/state/quickshell/user/generated/terminal/sequences.txt
+fi
+
+# Welcome banner on interactive startup
+if [[ -o interactive ]] && command -v welcome-msg &> /dev/null; then
+    welcome-msg
 fi
 
 # Use starship if available

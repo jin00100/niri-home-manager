@@ -291,6 +291,16 @@ case "${SKIP_NIRI}" in
       log_success "Niri config installed (dots)"
     fi
 
+    # Ensure Niri active animation symlink is valid and relative
+    local niri_anim_dir="${XDG_CONFIG_HOME}/niri/animations"
+    if [[ -d "$niri_anim_dir" ]]; then
+      local active_link="${niri_anim_dir}/active.kdl"
+      if [[ ! -e "$active_link" ]] || [[ "$(readlink "$active_link" 2>/dev/null)" =~ ^/home/ ]]; then
+        (cd "$niri_anim_dir" && ln -sf anim-smoke.kdl active.kdl)
+        log_success "Niri default animation linked: anim-smoke.kdl"
+      fi
+    fi
+
     # Patch config.kdl: detect polkit agent
     NIRI_CFG="${XDG_CONFIG_HOME}/niri/config.kdl"
     NIRI_ENV_CFG="${XDG_CONFIG_HOME}/niri/config.d/40-environment.kdl"
@@ -596,7 +606,7 @@ if [[ -f "defaults/config.json" ]]; then
 fi
 
 # Custom Shell, DevOps & Input method configurations
-for custom_cfg in shell zellij yazi nvim btop ghostty fcitx5; do
+for custom_cfg in shell zellij yazi nvim btop ghostty fcitx5 bat; do
   if [[ -d "dots/.config/${custom_cfg}" ]]; then
     install_dir__sync "dots/.config/${custom_cfg}" "${XDG_CONFIG_HOME}/${custom_cfg}"
   fi
@@ -623,6 +633,25 @@ if [[ -f "scripts/update-all.sh" ]]; then
   v mkdir -p "${XDG_BIN_HOME}"
   install_file "scripts/update-all.sh" "${XDG_BIN_HOME}/update-all"
   chmod +x "${XDG_BIN_HOME}/update-all"
+fi
+
+# User scripts and CLI utilities from dots/.local/bin
+if [[ -d "dots/.local/bin" ]]; then
+  v mkdir -p "${XDG_BIN_HOME}"
+  for bin_script in dots/.local/bin/*; do
+    if [[ -f "$bin_script" ]]; then
+      bname="$(basename "$bin_script")"
+      install_file "$bin_script" "${XDG_BIN_HOME}/${bname}"
+      chmod +x "${XDG_BIN_HOME}/${bname}"
+    fi
+  done
+fi
+
+# Welcome Message Banner
+if [[ -f "dots/.config/shell/welcome-banner.sh" ]]; then
+  v mkdir -p "${XDG_BIN_HOME}"
+  install_file "dots/.config/shell/welcome-banner.sh" "${XDG_BIN_HOME}/welcome-msg"
+  chmod +x "${XDG_BIN_HOME}/welcome-msg"
 fi
 
 # DevOps & CLI Tools (bat, zoxide, fzf, yazi, zellij, nvim, lazygit, etc.)
@@ -717,11 +746,19 @@ export INIR_VENV="${VENV_PATH}"
 export ILLOGICAL_IMPULSE_VIRTUAL_ENV="\$INIR_VENV"
 # Apply terminal color sequences (Material You from wallpaper)
 if [ -f ~/.local/state/quickshell/user/generated/terminal/sequences.txt ]; then
-  cat ~/.local/state/quickshell/user/generated/terminal/sequences.txt
+  command cat ~/.local/state/quickshell/user/generated/terminal/sequences.txt
+fi
+# Load modular environment, aliases and devops tools
+if [[ -f "$HOME/.config/shell/common-env.sh" ]]; then
+  source "$HOME/.config/shell/common-env.sh"
 fi
 # Starship prompt (fish is wired via config.fish; bash needs its own init)
 if command -v starship >/dev/null 2>&1; then
   eval "\$(starship init bash)"
+fi
+# Welcome banner on interactive startup
+if [[ \$- == *i* ]] && command -v welcome-msg >/dev/null 2>&1; then
+  welcome-msg
 fi
 # end iNiR
 BEOF
@@ -748,11 +785,19 @@ export INIR_VENV="${VENV_PATH}"
 export ILLOGICAL_IMPULSE_VIRTUAL_ENV="\$INIR_VENV"
 # Apply terminal color sequences (Material You from wallpaper)
 if [ -f ~/.local/state/quickshell/user/generated/terminal/sequences.txt ]; then
-  cat ~/.local/state/quickshell/user/generated/terminal/sequences.txt
+  command cat ~/.local/state/quickshell/user/generated/terminal/sequences.txt
+fi
+# Load modular environment, aliases and devops tools
+if [[ -f "$HOME/.config/shell/common-env.sh" ]]; then
+  source "$HOME/.config/shell/common-env.sh"
 fi
 # Starship prompt (fish is wired via config.fish; zsh needs its own init)
 if command -v starship >/dev/null 2>&1; then
   eval "\$(starship init zsh)"
+fi
+# Welcome banner on interactive startup
+if [[ -o interactive ]] && command -v welcome-msg >/dev/null 2>&1; then
+  welcome-msg
 fi
 # end iNiR
 ZEOF

@@ -56,13 +56,45 @@ if status is-interactive
         rm -f -- "$tmp"
     end
 
+    # SSH wrapper (Ghostty terminfo fallback)
+    function ssh
+        if test "$TERM" = "xterm-ghostty"; or test "$TERM_PROGRAM" = "Ghostty"
+            if command -v ghostty &>/dev/null
+                ghostty +ssh $argv
+            else
+                TERM=xterm-256color COLORTERM=truecolor command ssh $argv
+            end
+        else
+            TERM=xterm-256color COLORTERM=truecolor command ssh $argv
+        end
+    end
+
+    # Zellij wrapper
+    function zellij
+        if test -n "$SSH_CLIENT"; or test -n "$SSH_TTY"; or test -n "$SSH_CONNECTION"
+            if test -f "$HOME/.config/zellij/remote.kdl"
+                command zellij --config "$HOME/.config/zellij/remote.kdl" $argv
+            else
+                command zellij $argv
+            end
+        else
+            command zellij $argv
+        end
+    end
+
     # Zoxide
     if command -v zoxide &>/dev/null
         zoxide init fish --cmd cd | source
     end
 
+    # FZF integration
+    if command -v fzf &>/dev/null
+        fzf --fish | source
+    end
+
     # Welcome banner on interactive startup
-    if command -v welcome-msg &>/dev/null
+    if command -v welcome-msg &>/dev/null && not set -q _INIR_WELCOME_SHOWN
+        set -g _INIR_WELCOME_SHOWN 1
         welcome-msg
     end
 end

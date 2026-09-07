@@ -56,8 +56,8 @@ else
     name="$SELECTED"
 fi
 
-# Switch active symlink
-ln -sf "$ANIM_DIR/$choice" "$ACTIVE_LINK"
+# Switch active symlink (relative for portability across users/mounts)
+(cd "$ANIM_DIR" && ln -sf "$choice" active.kdl)
 
 # Instant config reload via niri IPC
 niri msg action load-config-file >/dev/null 2>&1 || true

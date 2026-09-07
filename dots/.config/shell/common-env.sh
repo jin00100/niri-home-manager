@@ -116,30 +116,41 @@ function y() {
   rm -f -- "$tmp"
 }
 
-# [Zoxide Integration]
-if command -v zoxide &>/dev/null; then
-  eval "$(zoxide init bash --cmd cd)"
-fi
-
-# [FZF Integration]
-if command -v fzf &>/dev/null; then
-  eval "$(fzf --bash 2>/dev/null || true)"
+# [Zoxide & FZF Integration]
+if [[ -n "$ZSH_VERSION" ]]; then
+  if command -v zoxide &>/dev/null; then
+    eval "$(zoxide init zsh --cmd cd)"
+  fi
+  if command -v fzf &>/dev/null; then
+    eval "$(fzf --zsh 2>/dev/null || true)"
+  fi
+elif [[ -n "$BASH_VERSION" ]]; then
+  if command -v zoxide &>/dev/null; then
+    eval "$(zoxide init bash --cmd cd)"
+  fi
+  if command -v fzf &>/dev/null; then
+    eval "$(fzf --bash 2>/dev/null || true)"
+  fi
 fi
 
 # [Kubernetes & Helm Autocompletion Cached]
 mkdir -p "$HOME/.cache/shell_completion"
+_sh_type="bash"
+[[ -n "$ZSH_VERSION" ]] && _sh_type="zsh"
+
 if command -v kubectl &>/dev/null; then
-  if [[ ! -f "$HOME/.cache/shell_completion/kubectl_completion.bash" ]]; then
-    kubectl completion bash > "$HOME/.cache/shell_completion/kubectl_completion.bash" 2>/dev/null
+  if [[ ! -f "$HOME/.cache/shell_completion/kubectl_completion.${_sh_type}" ]]; then
+    kubectl completion "${_sh_type}" > "$HOME/.cache/shell_completion/kubectl_completion.${_sh_type}" 2>/dev/null
   fi
-  [[ -f "$HOME/.cache/shell_completion/kubectl_completion.bash" ]] && source "$HOME/.cache/shell_completion/kubectl_completion.bash"
+  [[ -f "$HOME/.cache/shell_completion/kubectl_completion.${_sh_type}" ]] && source "$HOME/.cache/shell_completion/kubectl_completion.${_sh_type}"
 fi
 if command -v helm &>/dev/null; then
-  if [[ ! -f "$HOME/.cache/shell_completion/helm_completion.bash" ]]; then
-    helm completion bash > "$HOME/.cache/shell_completion/helm_completion.bash" 2>/dev/null
+  if [[ ! -f "$HOME/.cache/shell_completion/helm_completion.${_sh_type}" ]]; then
+    helm completion "${_sh_type}" > "$HOME/.cache/shell_completion/helm_completion.${_sh_type}" 2>/dev/null
   fi
-  [[ -f "$HOME/.cache/shell_completion/helm_completion.bash" ]] && source "$HOME/.cache/shell_completion/helm_completion.bash"
+  [[ -f "$HOME/.cache/shell_completion/helm_completion.${_sh_type}" ]] && source "$HOME/.cache/shell_completion/helm_completion.${_sh_type}"
 fi
+unset _sh_type
 
 # [GitLab CLI Configuration]
 if [[ -f /run/secrets/gitlab_token ]] && ! is_container; then
