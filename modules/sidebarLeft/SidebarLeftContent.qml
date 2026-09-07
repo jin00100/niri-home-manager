@@ -32,7 +32,6 @@ Item {
     property bool animeEnabled: (Config.options?.policies?.weeb ?? 0) !== 0
     property bool animeCloset: (Config.options?.policies?.weeb ?? 0) === 2
     property bool animeScheduleEnabled: Config.options?.sidebar?.animeSchedule?.enable ?? false
-    property bool wallhavenEnabled: Config.options?.sidebar?.wallhaven?.enable !== false
     property bool widgetsEnabled: Config.options?.sidebar?.widgets?.enable ?? true
     property bool toolsEnabled: Config.options?.sidebar?.tools?.enable ?? false
     property bool softwareEnabled: Config.options?.sidebar?.software?.enable ?? false
@@ -85,7 +84,7 @@ Item {
     function _doRestoreLastPlugin(): void {}
 
     readonly property var _tabDefaultOrder: [
-        "widgets", "anime", "animeSchedule", "wallhaven", "tools", "software"
+        "widgets", "anime", "animeSchedule", "tools", "software"
     ]
     readonly property var resolvedTabOrder: {
         const result = []
@@ -109,7 +108,6 @@ Item {
         if (root.widgetsEnabled) result.push({ id: "widgets", icon: "widgets", name: Translation.tr("Widgets") })
         if (root.animeEnabled && !root.animeCloset) result.push({ id: "anime", icon: "bookmark_heart", name: Translation.tr("Anime") })
         if (root.animeScheduleEnabled) result.push({ id: "animeSchedule", icon: "calendar_month", name: Translation.tr("Schedule") })
-        if (root.wallhavenEnabled) result.push({ id: "wallhaven", icon: "collections", name: Translation.tr("Wallpapers") })
         if (root.toolsEnabled) result.push({ id: "tools", icon: "build", name: Translation.tr("Tools") })
         if (root.softwareEnabled) result.push({ id: "software", icon: "store", name: Translation.tr("Software") })
         // DISABLED: webapps — requires quickshell-webengine rebuild
@@ -162,7 +160,6 @@ Item {
         const iconByView = {
             "widgets": "widgets",
             "anime": "bookmark_heart", "anime-schedule": "calendar_month",
-            "wallhaven": "collections",
             "tools": "build", "software": "store"
         }
         const icon = iconByView[view] ?? ""
@@ -540,7 +537,6 @@ Item {
                                     case "widgets": return widgetsComp
                                     case "bookmark_heart": return animeComp
                                     case "calendar_month": return animeScheduleComp
-                                    case "collections": return wallhavenComp
                                     case "build": return toolsComp
                                     case "store": return softwareComp
                                     // DISABLED: webapps
@@ -567,14 +563,6 @@ Item {
         Component { id: widgetsComp; WidgetsView {} }
         Component { id: animeComp; Anime {} }
         Component { id: animeScheduleComp; AnimeScheduleView {} }
-        Component {
-            id: wallhavenComp
-            WallhavenView {
-                screenWidth: root.screenWidth
-                screenHeight: root.screenHeight
-                panelScreen: root.panelScreen
-            }
-        }
         Component { id: toolsComp; ToolsView {} }
         Component { id: softwareComp; SoftwareView {} }
         // DISABLED: webapps — requires quickshell-webengine rebuild
