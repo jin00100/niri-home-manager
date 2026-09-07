@@ -43,7 +43,7 @@ if status is-interactive
     end
 
     if command -v bat &>/dev/null
-        alias cat "bat"
+        alias cat "bat --style=plain"
     end
 
     # Yazi wrapper

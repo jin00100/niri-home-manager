@@ -80,7 +80,7 @@ if ! is_container; then
     alias lt="eza --tree --level=2 --icons --git"
   fi
   if command -v bat &>/dev/null; then
-    alias cat="bat"
+    alias cat="bat --style=plain"
   fi
 fi
 
