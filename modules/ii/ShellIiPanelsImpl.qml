@@ -365,8 +365,8 @@ Item {
                 WlrLayershell.namespace: "quickshell:charging-ripple"
                 WlrLayershell.layer: WlrLayer.Overlay
                 WlrLayershell.keyboardFocus: WlrKeyboardFocus.None
-                exclusionMode: ExclusionMode.Ignore
-                mask: Region {}
+                Item { id: rippleEmptyMask; width: 0; height: 0 }
+                mask: Region { item: rippleEmptyMask }
                 implicitWidth: modelData.width
                 implicitHeight: modelData.height
 

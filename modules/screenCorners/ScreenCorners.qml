@@ -53,10 +53,10 @@ Scope {
 
         visible: !fullscreen && (showFakeRounding || shouldShowSidebarCornerOpen || shouldShowOrbitHotCorner)
 
-        exclusionMode: ExclusionMode.Ignore
+        Item { id: cornerEmptyMask; width: 0; height: 0 }
         mask: Region {
             item: orbitHotCornerLoader.active ? orbitHotCornerLoader
-                : (sidebarCornerOpenInteractionLoader.active ? sidebarCornerOpenInteractionLoader : null)
+                : (sidebarCornerOpenInteractionLoader.active ? sidebarCornerOpenInteractionLoader : cornerEmptyMask)
         }
         WlrLayershell.namespace: "quickshell:screenCorners"
         WlrLayershell.layer: WlrLayer.Overlay

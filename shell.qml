@@ -142,7 +142,7 @@ ShellRoot {
             GlobalStates.deferredPanelsReady = true;
             root._ensureScreenTimeService();
             // Boot greeting: show once per session (singleton preserves bootGreetingDone across hot-reload)
-            if (!GlobalStates.bootGreetingDone && (Config.options?.bootGreeting?.enable ?? true)) {
+            if (!GlobalStates.bootGreetingDone && (Config.options?.bootGreeting?.enable ?? false)) {
                 GlobalStates.bootGreetingOpen = true;
             }
             if (!root._bootDeferredAt) {

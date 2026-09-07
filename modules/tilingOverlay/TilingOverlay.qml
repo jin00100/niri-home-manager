@@ -55,6 +55,11 @@ Scope {
             WlrLayershell.namespace: "quickshell:tilingOverlay"
             WlrLayershell.keyboardFocus: root.showPicker ? WlrKeyboardFocus.Exclusive : WlrKeyboardFocus.None
 
+            Item { id: tilingEmptyMask; width: 0; height: 0 }
+            mask: Region {
+                item: root.showPicker ? panel : (root.showOsd ? osdRect : tilingEmptyMask)
+            }
+
             // Scrim
             Rectangle {
                 anchors.fill: parent
@@ -73,6 +78,7 @@ Scope {
 
             // OSD
             Rectangle {
+                id: osdRect
                 anchors.horizontalCenter: parent.horizontalCenter
                 anchors.top: parent.top
                 anchors.topMargin: 16
