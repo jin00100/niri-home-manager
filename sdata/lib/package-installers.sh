@@ -960,7 +960,11 @@ if status is-interactive
 
     # Load terminal colors from ii theming
     if test -f ~/.local/state/quickshell/user/generated/terminal/sequences.txt
-        command cat ~/.local/state/quickshell/user/generated/terminal/sequences.txt
+        if test -x /bin/cat
+            /bin/cat ~/.local/state/quickshell/user/generated/terminal/sequences.txt 2>/dev/null
+        else
+            command cat ~/.local/state/quickshell/user/generated/terminal/sequences.txt 2>/dev/null
+        end
     end
 
     # Welcome banner on interactive startup
@@ -999,7 +1003,11 @@ setup-bash-config(){
 
 # Load terminal colors from ii theming
 if [[ -f ~/.local/state/quickshell/user/generated/terminal/sequences.txt ]]; then
-    command cat ~/.local/state/quickshell/user/generated/terminal/sequences.txt
+    if [[ -x /bin/cat ]]; then
+        /bin/cat ~/.local/state/quickshell/user/generated/terminal/sequences.txt 2>/dev/null
+    else
+        command cat ~/.local/state/quickshell/user/generated/terminal/sequences.txt 2>/dev/null
+    fi
 fi
 
 # Welcome banner on interactive startup
@@ -1059,7 +1067,11 @@ setup-zsh-config(){
 
 # Load terminal colors from ii theming
 if [[ -f ~/.local/state/quickshell/user/generated/terminal/sequences.txt ]]; then
-    command cat ~/.local/state/quickshell/user/generated/terminal/sequences.txt
+    if [[ -x /bin/cat ]]; then
+        /bin/cat ~/.local/state/quickshell/user/generated/terminal/sequences.txt 2>/dev/null
+    else
+        command cat ~/.local/state/quickshell/user/generated/terminal/sequences.txt 2>/dev/null
+    fi
 fi
 
 # Welcome banner on interactive startup

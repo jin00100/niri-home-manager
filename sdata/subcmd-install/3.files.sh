@@ -746,7 +746,11 @@ export INIR_VENV="${VENV_PATH}"
 export ILLOGICAL_IMPULSE_VIRTUAL_ENV="\$INIR_VENV"
 # Apply terminal color sequences (Material You from wallpaper)
 if [ -f ~/.local/state/quickshell/user/generated/terminal/sequences.txt ]; then
-  command cat ~/.local/state/quickshell/user/generated/terminal/sequences.txt
+  if [ -x /bin/cat ]; then
+    /bin/cat ~/.local/state/quickshell/user/generated/terminal/sequences.txt 2>/dev/null
+  else
+    command cat ~/.local/state/quickshell/user/generated/terminal/sequences.txt 2>/dev/null
+  fi
 fi
 # Load modular environment, aliases and devops tools
 if [[ -f "$HOME/.config/shell/common-env.sh" ]]; then
@@ -785,7 +789,11 @@ export INIR_VENV="${VENV_PATH}"
 export ILLOGICAL_IMPULSE_VIRTUAL_ENV="\$INIR_VENV"
 # Apply terminal color sequences (Material You from wallpaper)
 if [ -f ~/.local/state/quickshell/user/generated/terminal/sequences.txt ]; then
-  command cat ~/.local/state/quickshell/user/generated/terminal/sequences.txt
+  if [ -x /bin/cat ]; then
+    /bin/cat ~/.local/state/quickshell/user/generated/terminal/sequences.txt 2>/dev/null
+  else
+    command cat ~/.local/state/quickshell/user/generated/terminal/sequences.txt 2>/dev/null
+  fi
 fi
 # Load modular environment, aliases and devops tools
 if [[ -f "$HOME/.config/shell/common-env.sh" ]]; then

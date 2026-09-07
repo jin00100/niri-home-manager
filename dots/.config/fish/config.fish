@@ -9,7 +9,11 @@ if status is-interactive
 
     # Apply terminal color sequences (Material You from wallpaper)
     if test -f ~/.local/state/quickshell/user/generated/terminal/sequences.txt
-        command cat ~/.local/state/quickshell/user/generated/terminal/sequences.txt
+        if test -x /bin/cat
+            /bin/cat ~/.local/state/quickshell/user/generated/terminal/sequences.txt 2>/dev/null
+        else
+            command cat ~/.local/state/quickshell/user/generated/terminal/sequences.txt 2>/dev/null
+        end
     end
 
     # Aliases
