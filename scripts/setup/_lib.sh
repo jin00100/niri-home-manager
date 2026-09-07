@@ -94,7 +94,7 @@ ensure_aur_helper() {
     local tmp
     tmp="$(mktemp -d)"
     git clone --depth=1 https://aur.archlinux.org/yay-bin.git "$tmp/yay-bin" >&2
-    (cd "$tmp/yay-bin" && makepkg -si --noconfirm) >&2
+    (cd "$tmp/yay-bin" && makepkg -s --noconfirm && sudo pacman -U --needed --noconfirm *.pkg.tar.*) >&2
     rm -rf "$tmp"
     echo yay
 }

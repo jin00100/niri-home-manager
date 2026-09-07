@@ -174,10 +174,16 @@ install-yay(){
   # Clone yay-bin (faster than compiling yay)
   x git clone https://aur.archlinux.org/yay-bin.git /tmp/buildyay || return 1
 
-  # Build and install
+  # Build and install using pkg_sudo to avoid makepkg sudo timeout
   x cd /tmp/buildyay
-  if ! x makepkg -si --noconfirm; then
-      log_error "Failed to build/install yay."
+  if ! x makepkg -s --noconfirm; then
+      log_error "Failed to build yay."
+      x cd "${REPO_ROOT}"
+      return 1
+  fi
+
+  if ! x pkg_sudo pacman -U --needed --noconfirm *.pkg.tar.*; then
+      log_error "Failed to install built yay package."
       x cd "${REPO_ROOT}"
       return 1
   fi
@@ -191,7 +197,8 @@ install-paru(){
   x pkg_sudo pacman -S --needed --noconfirm base-devel git
   x git clone https://aur.archlinux.org/paru-bin.git /tmp/buildparu
   x cd /tmp/buildparu
-  x makepkg -si --noconfirm
+  x makepkg -s --noconfirm
+  x pkg_sudo pacman -U --needed --noconfirm *.pkg.tar.*
   x cd "${REPO_ROOT}"
   rm -rf /tmp/buildparu
 }
