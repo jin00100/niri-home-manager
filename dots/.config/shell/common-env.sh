@@ -1,4 +1,6 @@
 # [Environment Detection]
+export PATH="$HOME/.local/bin:$PATH"
+
 function is_ssh() { 
   [[ -n "$SSH_CLIENT" || -n "$SSH_TTY" || -n "$SSH_CONNECTION" ]] && return 0
   [[ "$(ps -o comm= -p $PPID 2>/dev/null)" == "sshd" ]]
