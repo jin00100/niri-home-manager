@@ -1,0 +1,44 @@
+{
+  "env": {
+    "PATH": "$(PATH):$(HOME)/.local/bin"
+  },
+  "apps": [
+    {
+      "name": "Desktop",
+      "image-path": "desktop.png",
+      "prep-cmd": [
+        {
+          "do": "sunshine-wake.sh",
+          "undo": ""
+        }
+      ]
+    },
+    {
+      "name": "Low Res Desktop",
+      "image-path": "desktop.png",
+      "prep-cmd": [
+        {
+          "do": "sunshine-wake.sh",
+          "undo": ""
+        },
+        {
+          "do": "xrandr --output HDMI-1 --mode 1920x1080",
+          "undo": "xrandr --output HDMI-1 --mode 1920x1200"
+        }
+      ]
+    },
+    {
+      "name": "Steam Big Picture",
+      "detached": [
+        "setsid steam steam://open/bigpicture"
+      ],
+      "prep-cmd": [
+        {
+          "do": "sunshine-wake.sh",
+          "undo": "setsid steam steam://close/bigpicture"
+        }
+      ],
+      "image-path": "steam.png"
+    }
+  ]
+}

@@ -621,6 +621,20 @@ if [[ -f "dots/.config/starship-ssh.toml" ]]; then
   install_file "dots/.config/starship-ssh.toml" "${XDG_CONFIG_HOME}/starship-ssh.toml"
 fi
 
+# Sunshine (Moonlight Remote Desktop - Niri lock screen wake integration)
+if [[ -f "dots/.config/sunshine/apps.json" ]]; then
+  v mkdir -p "${XDG_CONFIG_HOME}/sunshine"
+  _target_apps="${XDG_CONFIG_HOME}/sunshine/apps.json"
+  if [[ ! -f "$_target_apps" ]]; then
+    install_file "dots/.config/sunshine/apps.json" "$_target_apps"
+  elif command -v jq >/dev/null 2>&1; then
+    if ! grep -q "sunshine-wake.sh" "$_target_apps" 2>/dev/null; then
+      jq '(.apps[] | select(.name == "Desktop") | .["prep-cmd"]) |= ([{"do": "sunshine-wake.sh", "undo": ""}] + (. // []))' "$_target_apps" > "$_target_apps.tmp" 2>/dev/null && mv "$_target_apps.tmp" "$_target_apps" || true
+      log_success "Sunshine Desktop prep-cmd updated for Wayland lock screen wake"
+    fi
+  fi
+fi
+
 # Animation Switcher
 if [[ -f "scripts/niri-anim-switcher" ]]; then
   v mkdir -p "${XDG_BIN_HOME}"
