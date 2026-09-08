@@ -16,13 +16,17 @@ fi
 
 TERMINAL="${TERMINAL:-kitty}"
 
-if command -v "$TERMINAL" &>/dev/null; then
+if [[ -x "/usr/bin/$TERMINAL" ]]; then
+    exec "/usr/bin/$TERMINAL" "$@"
+elif command -v "$TERMINAL" &>/dev/null; then
     exec "$TERMINAL" "$@"
 fi
 
 # Fallback chain: project default first, then popular alternatives
 for fallback in kitty foot ghostty alacritty wezterm konsole xterm; do
-    if command -v "$fallback" &>/dev/null; then
+    if [[ -x "/usr/bin/$fallback" ]]; then
+        exec "/usr/bin/$fallback" "$@"
+    elif command -v "$fallback" &>/dev/null; then
         exec "$fallback" "$@"
     fi
 done

@@ -29,6 +29,9 @@ spawn-at-startup "/usr/lib/mate-polkit/polkit-mate-authentication-agent-1"
 // Input method daemon
 spawn-at-startup "fcitx5" "-d"
 
+// Session isolation: clean up any lingering processes from other compositors
+spawn-at-startup "bash" "-c" "pkill -9 waybar swaync hypridle nwg-dock-hyprland 2>/dev/null || true; pkill -f ml4w-wallpaper-automation 2>/dev/null || true; [ -x ~/.config/ml4w/listeners.sh ] && ~/.config/ml4w/listeners.sh --stopall 2>/dev/null || true"
+
 // ── iNiR shell ──────────────────────────────────────────────────────────────
 // iNiR is managed by the user systemd service (inir.service).
 // Do not add a compositor startup entry here or you'll get two shells.
