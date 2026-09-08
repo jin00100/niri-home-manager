@@ -46,16 +46,10 @@ layout {
 
     // ── Focus ring ──────────────────────────────────────────────────────────
     // Drawn around the focused window on the active monitor.
-    // With prefer-no-csd, it draws *around* the window geometry.
+    // Dual-tone complementary flowing border (aligned with Hyprland wallpaper palette)
     focus-ring {
-        off
-        width 1
-        active-color   "#808080"
-        inactive-color "#505050"
-
-        // Gradient alternative (CSS linear-gradient style):
-        // active-gradient from="#80c8ff" to="#c7ff7f" angle=45
-        // relative-to="workspace-view" makes the gradient span the whole view.
+        width 3
+        active-gradient from="#BBC6E5" to="#5A71A4" angle=45 relative-to="workspace-view"
     }
 
     // ── Border ──────────────────────────────────────────────────────────────

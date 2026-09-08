@@ -1,0 +1,8 @@
+{
+  "id": "niri",
+  "label": "Niri Focus Border",
+  "module": "25-niri.sh",
+  "category": "window-manager",
+  "inputs": ["colors.json"],
+  "description": "Update Niri focus-ring dual-tone gradient to match current wallpaper palette."
+}
