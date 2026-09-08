@@ -43,8 +43,9 @@ window-rule {
 
 // Chrome / Chromium: prevent auto-maximization or fullscreen, open as 50% width column (align side-by-side like terminals)
 window-rule {
-    match app-id=r#"^(google-chrome|Google-chrome|chromium|chromium-browser)$"#
+    match app-id=r#"^(google-chrome.*|Google-chrome.*|chromium.*|com\.google\.Chrome.*)$"#
     open-maximized false
+    open-maximized-to-edges false
     open-fullscreen false
     default-column-width { proportion 0.5; }
 }
