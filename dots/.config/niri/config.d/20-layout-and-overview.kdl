@@ -48,7 +48,7 @@ layout {
     // Drawn around the focused window on the active monitor.
     // Dual-tone complementary flowing border (aligned with Hyprland wallpaper palette)
     focus-ring {
-        width 3
+        width 2
         active-gradient from="#BBC6E5" to="#5A71A4" angle=45 relative-to="workspace-view"
     }
 
