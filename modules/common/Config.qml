@@ -901,7 +901,7 @@ Singleton {
             }
 
             property JsonObject reloadToasts: JsonObject {
-                property bool enable: true
+                property bool enable: false
             }
 
             property JsonObject audio: JsonObject {

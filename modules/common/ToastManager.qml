@@ -27,7 +27,7 @@ Scope {
     // Check if reload toasts should be shown
     function shouldShowReloadToast(): bool {
         if (Config.isSettingsProcess) return false
-        if (!(Config.options?.reloadToasts?.enable ?? true)) return false
+        if (!(Config.options?.reloadToasts?.enable ?? false)) return false
         
         if (GameMode.disableReloadToasts && (GameMode.active || GameMode.hasAnyFullscreenWindow || GameMode.suppressNiriToast)) {
             return false

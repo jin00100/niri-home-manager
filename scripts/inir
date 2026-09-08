@@ -2163,7 +2163,8 @@ open_detached_qml_window() {
     # covers only the check-kill-launch window; it is released before exec
     # so child processes of qs (e.g. kde-material-you-colors) don't inherit
     # and leak it.
-    local lock_file="${TMPDIR:-/tmp}/inir-launch-${entry%.qml}.lock"
+    local lock_entry="${entry//\//-}"
+    local lock_file="${TMPDIR:-/tmp}/inir-launch-${lock_entry%.qml}.lock"
     exec 9>"$lock_file"
     if ! flock -n 9; then
         echo "$entry launch already in progress" >&2

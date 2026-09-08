@@ -2489,7 +2489,7 @@ ContentPage {
             SettingsSwitch {
                 buttonIcon: "notifications_active"
                 text: Translation.tr("Show reload toasts")
-                checked: Config.options?.reloadToasts?.enable ?? true
+                checked: Config.options?.reloadToasts?.enable ?? false
                 onCheckedChanged: Config.setNestedValue("reloadToasts.enable", checked)
                 StyledToolTip {
                     text: Translation.tr("Show toast notifications when Quickshell or Niri config reloads.\nErrors are always shown.")

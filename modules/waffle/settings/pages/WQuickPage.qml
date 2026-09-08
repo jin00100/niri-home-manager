@@ -1117,7 +1117,7 @@ WSettingsPage {
             label: Translation.tr("Show reload notifications")
             icon: "alert"
             description: Translation.tr("Toast when Quickshell or Niri config reloads")
-            checked: Config.options?.reloadToasts?.enable ?? true
+            checked: Config.options?.reloadToasts?.enable ?? false
             onCheckedChanged: Config.setNestedValue("reloadToasts.enable", checked)
         }
     }

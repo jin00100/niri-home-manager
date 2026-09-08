@@ -1702,7 +1702,7 @@
         }
     },
     "reloadToasts": {
-        "enable": true
+        "enable": false
     },
     "modules": {
         "altSwitcher": false,
@@ -1760,7 +1760,7 @@
     },
     "waffles": {
         "settings": {
-            "useMaterialStyle": false
+            "useMaterialStyle": true
         },
         "modules": {
             "sidebarLeft": false,

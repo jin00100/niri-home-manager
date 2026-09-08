@@ -1221,9 +1221,12 @@ if args.render_templates:
                 file=sys.stderr,
             )
             os.remove(out_path)
-        with open(out_path, "w") as f:
-            f.write(rendered)
-        rendered_count += 1
+        try:
+            with open(out_path, "w") as f:
+                f.write(rendered)
+            rendered_count += 1
+        except (PermissionError, OSError) as e:
+            print(f"[render-templates] Skipped {out_path}: {e}", file=sys.stderr)
 
     if rendered_count > 0:
         print(
