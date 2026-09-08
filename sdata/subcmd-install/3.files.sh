@@ -755,28 +755,31 @@ if [[ -f "$HOME/.bashrc" ]]; then
 fi
 cat >> "$HOME/.bashrc" << BEOF
 
-${BASH_ENV_MARKER}
+\${BASH_ENV_MARKER}
 export INIR_VENV="${VENV_PATH}"
-export ILLOGICAL_IMPULSE_VIRTUAL_ENV="\$INIR_VENV"
-# Apply terminal color sequences (Material You from wallpaper)
-if [ -f ~/.local/state/quickshell/user/generated/terminal/sequences.txt ]; then
-  if [ -x /bin/cat ]; then
-    /bin/cat ~/.local/state/quickshell/user/generated/terminal/sequences.txt 2>/dev/null
-  else
+export ILLOGICAL_IMPULSE_VIRTUAL_ENV="\\\$INIR_VENV"
+if [[ "\\\$XDG_CURRENT_DESKTOP" == "niri" ]]; then
+  # Apply terminal color sequences (Material You from wallpaper)
+  if [ -f ~/.local/state/quickshell/user/generated/terminal/sequences.txt ]; then
     command cat ~/.local/state/quickshell/user/generated/terminal/sequences.txt 2>/dev/null
   fi
-fi
-# Load modular environment, aliases and devops tools
-if [[ -f "$HOME/.config/shell/common-env.sh" ]]; then
-  source "$HOME/.config/shell/common-env.sh"
-fi
-# Starship prompt (fish is wired via config.fish; bash needs its own init)
-if command -v starship >/dev/null 2>&1; then
-  eval "\$(starship init bash)"
-fi
-# Welcome banner on interactive startup
-if [[ \$- == *i* ]] && command -v welcome-msg >/dev/null 2>&1; then
-  welcome-msg
+  if [[ \\\$- == *i* ]] && [[ -z "\\\$IN_FISH" ]] && command -v fish &>/dev/null; then
+    export IN_FISH=1
+    export SHELL=\\\$(which fish)
+    exec fish -l
+  fi
+  # Load modular environment, aliases and devops tools
+  if [[ -f "\$HOME/.config/shell/common-env.sh" ]]; then
+    source "\$HOME/.config/shell/common-env.sh"
+  fi
+  # Starship prompt (fish is wired via config.fish; bash needs its own init)
+  if command -v starship >/dev/null 2>&1; then
+    eval "\\\$(starship init bash)"
+  fi
+  # Welcome banner on interactive startup
+  if [[ \\\$- == *i* ]] && command -v welcome-msg >/dev/null 2>&1; then
+    welcome-msg
+  fi
 fi
 # end iNiR
 BEOF
@@ -799,28 +802,26 @@ if [[ -f "$HOME/.zshrc" ]]; then
     sed -i "/${BASH_ENV_MARKER}/,/# end iNiR/d" "$HOME/.zshrc"
     cat >> "$HOME/.zshrc" << ZEOF
 
-${BASH_ENV_MARKER}
+\${BASH_ENV_MARKER}
 export INIR_VENV="${VENV_PATH}"
-export ILLOGICAL_IMPULSE_VIRTUAL_ENV="\$INIR_VENV"
-# Apply terminal color sequences (Material You from wallpaper)
-if [ -f ~/.local/state/quickshell/user/generated/terminal/sequences.txt ]; then
-  if [ -x /bin/cat ]; then
-    /bin/cat ~/.local/state/quickshell/user/generated/terminal/sequences.txt 2>/dev/null
-  else
+export ILLOGICAL_IMPULSE_VIRTUAL_ENV="\\\$INIR_VENV"
+if [[ "\\\$XDG_CURRENT_DESKTOP" == "niri" ]]; then
+  # Apply terminal color sequences (Material You from wallpaper)
+  if [ -f ~/.local/state/quickshell/user/generated/terminal/sequences.txt ]; then
     command cat ~/.local/state/quickshell/user/generated/terminal/sequences.txt 2>/dev/null
   fi
-fi
-# Load modular environment, aliases and devops tools
-if [[ -f "$HOME/.config/shell/common-env.sh" ]]; then
-  source "$HOME/.config/shell/common-env.sh"
-fi
-# Starship prompt (fish is wired via config.fish; zsh needs its own init)
-if command -v starship >/dev/null 2>&1; then
-  eval "\$(starship init zsh)"
-fi
-# Welcome banner on interactive startup
-if [[ -o interactive ]] && command -v welcome-msg >/dev/null 2>&1; then
-  welcome-msg
+  # Load modular environment, aliases and devops tools
+  if [[ -f "\$HOME/.config/shell/common-env.sh" ]]; then
+    source "\$HOME/.config/shell/common-env.sh"
+  fi
+  # Starship prompt (fish is wired via config.fish; zsh needs its own init)
+  if command -v starship >/dev/null 2>&1; then
+    eval "\\\$(starship init zsh)"
+  fi
+  # Welcome banner on interactive startup
+  if [[ -o interactive ]] && command -v welcome-msg >/dev/null 2>&1; then
+    welcome-msg
+  fi
 fi
 # end iNiR
 ZEOF
