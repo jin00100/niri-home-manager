@@ -16,8 +16,8 @@ container=$(jq -r '.primary_container // empty' "$COLORS_FILE")
 
 [[ -n "$primary" && -n "$container" ]] || exit 0
 
-# Replace active-gradient in Niri's focus-ring
-sed -i -E "s|active-gradient from=\"[^\"]+\" to=\"[^\"]+\"|active-gradient from=\"$primary\" to=\"$container\"|" "$NIRI_CONF"
+# Replace active-gradient strictly within the focus-ring block
+sed -i -E '/focus-ring\s*\{/,/\}/ s|active-gradient from="[^"]+" to="[^"]+"|active-gradient from="'"$primary"'" to="'"$container"'"|' "$NIRI_CONF"
 
 # Hot-reload Niri if active socket is present
 socket=$(ls /run/user/$(id -u)/niri*.sock 2>/dev/null | head -n 1 || true)
