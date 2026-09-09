@@ -74,10 +74,10 @@ else
     exit 0
   fi
 
-  # Arch Linux local terminal -> Display classic Arch ASCII + Neofetch layout (Image 1)
+  # Arch Linux local terminal -> Display classic Neofetch layout (Circular Colors)
   if command -v fastfetch &>/dev/null; then
     echo ""
-    fastfetch -c neofetch --color-keys cyan --color-title cyan --logo-color-1 cyan
+    fastfetch -c "$HOME/.config/fastfetch/config.jsonc" 2>/dev/null || fastfetch
     echo ""
   elif command -v neofetch &>/dev/null; then
     echo ""

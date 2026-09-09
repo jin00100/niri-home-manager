@@ -606,7 +606,7 @@ if [[ -f "defaults/config.json" ]]; then
 fi
 
 # Custom Shell, DevOps & Input method configurations
-for custom_cfg in shell zellij yazi nvim btop ghostty fcitx5 bat; do
+for custom_cfg in shell zellij yazi nvim btop ghostty fcitx5 bat fastfetch; do
   if [[ -d "dots/.config/${custom_cfg}" ]]; then
     install_dir__sync "dots/.config/${custom_cfg}" "${XDG_CONFIG_HOME}/${custom_cfg}"
   fi
