@@ -362,6 +362,11 @@ for pkg in "${_missing_official[@]}"; do
   if pacman -Si "$pkg" &>/dev/null; then
     _repo_installable+=("$pkg")
   else
+    # deno is not in official ARM64 repos and AUR binary fails; nodejs is already installed
+    if [[ "$pkg" == "deno" ]] && [[ "$(uname -m)" =~ ^(aarch64|arm64)$ ]]; then
+      log_info "Skipping $pkg AUR fallback on ARM64 (nodejs is already installed as JS runtime)"
+      continue
+    fi
     REPO_FALLBACK_PACKAGES+=("$pkg")
   fi
 done

@@ -27,7 +27,6 @@ depends=(
   mpv-mpris
   yt-dlp
   yt-dlp-ejs
-  deno
   socat
 )
 

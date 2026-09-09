@@ -128,7 +128,6 @@ depends=(
   mpv-mpris
   yt-dlp
   yt-dlp-ejs
-  deno
   socat
 
   #--- Theming ---
@@ -218,6 +217,7 @@ optdepends=(
   'millennium-bin: Steam theming via Millennium (requires steam)'
   'whitesur-icon-theme: macOS-style icons'
   'qt6-avif-image-plugin: AVIF wallpaper support'
+  'deno: optional JS runtime for yt-dlp (nodejs already provides this)'
 )
 
 # Empty package — no files, only dependency tracking
