@@ -1602,6 +1602,7 @@ Singleton {
                     property int intervalMinutes: 30 // minutes between wallpaper changes
                     property bool generateColors: true // regenerate theme colors on each change
                     property string folder: "" // empty = use current wallpaper folder
+                    property real lastTimestamp: 0 // persistent last shuffle timestamp
                 }
                 property JsonObject pan: JsonObject {
                     property real x: 0.0 // Focal point offset X (-1.0 to 1.0, stored as fraction; -1 = full left, +1 = full right)

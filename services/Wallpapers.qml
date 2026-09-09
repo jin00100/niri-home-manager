@@ -1161,14 +1161,11 @@ Singleton {
     readonly property bool autoWallpaperGenerateColors: Config.options?.background?.autoWallpaper?.generateColors ?? true
     readonly property string autoWallpaperFolder: Config.options?.background?.autoWallpaper?.folder ?? ""
 
-    property real _lastAutoWallpaperTimestamp: Date.now()
+    property real _lastAutoWallpaperTimestamp: 0
     property bool _pendingShuffleOnUnlock: false
 
     onAutoWallpaperEnabledChanged: {
-        if (root.autoWallpaperEnabled) {
-            root._lastAutoWallpaperTimestamp = Date.now()
-            root._pendingShuffleOnUnlock = false
-        }
+        root._pendingShuffleOnUnlock = false
     }
 
     function _normalizeFolderPath(folderPath: string): string {
@@ -1197,11 +1194,21 @@ Singleton {
 
     Timer {
         id: autoWallpaperTicker
-        interval: 15000
+        interval: 5000
         running: root.autoWallpaperEnabled
         repeat: true
         onTriggered: {
             if (!root.autoWallpaperEnabled) return
+            const saved = Config.options?.background?.autoWallpaper?.lastTimestamp
+            if (typeof saved === "number" && saved > 0 && saved <= Date.now()) {
+                root._lastAutoWallpaperTimestamp = saved
+            }
+            if (root._lastAutoWallpaperTimestamp === 0) {
+                root._lastAutoWallpaperTimestamp = Date.now()
+                Config.setNestedValue("background.autoWallpaper.lastTimestamp", root._lastAutoWallpaperTimestamp)
+                return
+            }
+
             const intervalMs = root.autoWallpaperInterval * 60 * 1000
             const elapsed = Date.now() - root._lastAutoWallpaperTimestamp
             if (elapsed >= intervalMs) {
@@ -1225,7 +1232,9 @@ Singleton {
     }
 
     function _cycleAutoWallpaper(): void {
-        root._lastAutoWallpaperTimestamp = Date.now()
+        const now = Date.now()
+        root._lastAutoWallpaperTimestamp = now
+        Config.setNestedValue("background.autoWallpaper.lastTimestamp", now)
         root._pendingShuffleOnUnlock = false
         root._pickRandomAndApply()
     }
@@ -1234,21 +1243,13 @@ Singleton {
         root._cycleAutoWallpaper()
     }
 
-    function _pickRandomAndApply(): void {
+    function _getRandomWallpaperPath(excludePath: string): string {
         const count = autoWallpaperFolderModel.count
-        if (count === 0) {
-            if (folderModel.count > 0)
-                root.randomFromCurrentFolder(Appearance.m3colors.darkmode)
-            return
-        }
-
-        const currentPath = FileUtils.trimFileProtocol(String(Config.options?.background?.wallpaperPath ?? ""))
+        if (count === 0) return ""
         let attempts = 0
-        let randomIndex = -1
         let filePath = ""
-
         do {
-            randomIndex = Math.floor(Math.random() * count)
+            const randomIndex = Math.floor(Math.random() * count)
             filePath = autoWallpaperFolderModel.get(randomIndex, "filePath")
             if (!filePath) {
                 const rawUrl = autoWallpaperFolderModel.get(randomIndex, "fileURL")
@@ -1264,9 +1265,111 @@ Singleton {
                 }
             }
             attempts++
-        } while (filePath === currentPath && attempts < 10 && count > 1)
+        } while (filePath === excludePath && attempts < 10 && count > 1)
+        return filePath ? FileUtils.trimFileProtocol(filePath) : ""
+    }
 
-        if (!filePath || filePath.length === 0) return
+    function _pickRandomAndApply(): void {
+        const count = autoWallpaperFolderModel.count
+        if (count === 0) {
+            if (folderModel.count > 0)
+                root.randomFromCurrentFolder(Appearance.m3colors.darkmode)
+            return
+        }
+
+        const currentPath = FileUtils.trimFileProtocol(String(Config.options?.background?.wallpaperPath ?? ""))
+        const multiMon = Config.options?.background?.multiMonitor?.enable ?? false
+        console.log("[Wallpapers] Auto-wallpaper running. multiMonitorEnabled=", multiMon, "count=", count)
+
+        if (multiMon) {
+            const screens = Quickshell.screens
+            const activeMonitors = []
+            for (let i = 0; i < screens.length; i++) {
+                const monName = WallpaperListener.getMonitorName(screens[i])
+                if (monName && activeMonitors.indexOf(monName) === -1) {
+                    activeMonitors.push(monName)
+                }
+            }
+
+            const currentArray = Config.options?.background?.wallpapersByMonitor ?? []
+            if (activeMonitors.length === 0) {
+                for (let j = 0; j < currentArray.length; j++) {
+                    const e = currentArray[j]
+                    if (e && e.monitor && activeMonitors.indexOf(e.monitor) === -1) {
+                        activeMonitors.push(e.monitor)
+                    }
+                }
+            }
+
+            if (activeMonitors.length > 0) {
+                const newArray = []
+                let primaryWallpaper = ""
+
+                for (let m = 0; m < activeMonitors.length; m++) {
+                    const monName = activeMonitors[m]
+                    let oldMonPath = currentPath
+                    for (let k = 0; k < currentArray.length; k++) {
+                        if (currentArray[k] && currentArray[k].monitor === monName) {
+                            oldMonPath = currentArray[k].path ?? currentPath
+                            break
+                        }
+                    }
+
+                    const monPath = _getRandomWallpaperPath(oldMonPath)
+                    if (!monPath) continue
+                    if (!primaryWallpaper) primaryWallpaper = monPath
+
+                    console.log("[Wallpapers] Multi-mon setting wallpaper for", monName, "->", monPath)
+                    root.requestWallpaperBlurTransition(monName)
+
+                    let currentEntry = null
+                    for (let k = 0; k < currentArray.length; k++) {
+                        if (currentArray[k] && currentArray[k].monitor === monName) {
+                            currentEntry = currentArray[k]
+                            break
+                        }
+                    }
+
+                    let wsFirst = 1, wsLast = 10
+                    if (CompositorService.isNiri) {
+                        const range = detectNiriWorkspaceRange(monName)
+                        if (range) { wsFirst = range.first; wsLast = range.last }
+                    }
+
+                    newArray.push(Object.assign({}, currentEntry ?? {}, {
+                        monitor: monName,
+                        path: monPath,
+                        workspaceFirst: wsFirst,
+                        workspaceLast: wsLast
+                    }))
+                }
+
+                if (newArray.length > 0) {
+                    Config.setNestedValue("background.wallpapersByMonitor", newArray)
+                }
+                if (primaryWallpaper) {
+                    Config.setNestedValue("background.wallpaperPath", primaryWallpaper)
+                    Config.setNestedValue("background.thumbnailPath", "")
+                    if (root.autoWallpaperGenerateColors) {
+                        root._queueWallpaperScript(primaryWallpaper, Appearance.m3colors.darkmode, false)
+                    }
+                }
+                root.changed()
+                return
+            }
+        }
+
+        // Global single-wallpaper mode
+        const filePath = _getRandomWallpaperPath(currentPath)
+        if (!filePath) return
+        console.log("[Wallpapers] Single/Global mode setting wallpaper ->", filePath)
+
+        // Synchronize wallpapersByMonitor so stale per-monitor overrides never freeze the display
+        const currentArray = Config.options?.background?.wallpapersByMonitor ?? []
+        if (currentArray.length > 0) {
+            const syncedArray = currentArray.map(e => Object.assign({}, e, { path: filePath }))
+            Config.setNestedValue("background.wallpapersByMonitor", syncedArray)
+        }
 
         if (root.autoWallpaperGenerateColors) {
             root.apply(filePath, Appearance.m3colors.darkmode)
@@ -1278,5 +1381,6 @@ Singleton {
             root.changed()
         }
     }
+
     // ── End auto wallpaper cycling ──────────────────────────────────────
 }
