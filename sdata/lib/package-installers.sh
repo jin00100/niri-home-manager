@@ -195,7 +195,11 @@ install-yay(){
 install-paru(){
   tui_info "Installing paru (AUR helper)..."
   x pkg_sudo pacman -S --needed --noconfirm base-devel git
-  x git clone https://aur.archlinux.org/paru-bin.git /tmp/buildparu
+  local paru_repo="https://aur.archlinux.org/paru-bin.git"
+  case "$(uname -m)" in
+    aarch64|arm64) paru_repo="https://aur.archlinux.org/paru.git" ;;
+  esac
+  x git clone "$paru_repo" /tmp/buildparu
   x cd /tmp/buildparu
   x makepkg -s --noconfirm
   x pkg_sudo pacman -U --needed --noconfirm *.pkg.tar.*
@@ -576,8 +580,12 @@ install-eza(){
   log_info "Installing Eza..."
 
   mkdir -p ~/.local/bin
+  local eza_arch="x86_64-unknown-linux-musl"
+  case "$(uname -m)" in
+    aarch64|arm64) eza_arch="aarch64-unknown-linux-musl" ;;
+  esac
   if curl -fsSL -o /tmp/eza.tar.gz \
-    'https://github.com/eza-community/eza/releases/latest/download/eza_x86_64-unknown-linux-musl.tar.gz'; then
+    "https://github.com/eza-community/eza/releases/latest/download/eza_${eza_arch}.tar.gz"; then
     tar -xzf /tmp/eza.tar.gz -C ~/.local/bin
     chmod +x ~/.local/bin/eza
     log_success "Eza installed"

@@ -35,8 +35,8 @@ input {
         tap
         tap-button-map "left-right-middle"
 
-        // Scroll direction: uncomment for macOS-style "natural" scrolling.
-        // natural-scroll
+        // Scroll direction: macOS-style "natural" scrolling enabled.
+        natural-scroll
 
         // Disable touchpad while typing (dwt) or while the trackpoint is in use (dwtp).
         // dwt

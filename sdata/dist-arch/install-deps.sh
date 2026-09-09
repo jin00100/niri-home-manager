@@ -400,12 +400,12 @@ AUR_PACKAGES=(
 
   # Qt6 extras (not in official repos)
   qt6-avif-image-plugin
-
-  # Wallpaper effects editor (used by Gowall integration)
-  gowall-bin
-
-  # Note: Python deps are handled via uv + requirements.txt, not AUR packages
 )
+
+# Wallpaper effects editor (gowall-bin is x86_64 only in AUR)
+if [[ "$(uname -m)" =~ ^(x86_64|amd64)$ ]]; then
+  AUR_PACKAGES+=(gowall-bin)
+fi
 unset REPO_FALLBACK_PACKAGES
 
 # Critical fonts that still require AUR (official-repo fonts are installed above)
@@ -461,8 +461,10 @@ install_font_fallback() {
 if $INSTALL_FONTS; then
   AUR_PACKAGES+=(
     whitesur-icon-theme
-    darkly-bin
   )
+  if [[ "$(uname -m)" =~ ^(x86_64|amd64)$ ]]; then
+    AUR_PACKAGES+=(darkly-bin)
+  fi
 fi
 
 if $INSTALL_AUDIO; then

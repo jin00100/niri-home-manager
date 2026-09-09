@@ -46,3 +46,11 @@ binds {
     Mod+M      { maximize-column; }
     Mod+D      { maximize-window-to-edges; }
 }
+
+// ── Apple Silicon MacBook Pro Display Output (120Hz ProMotion + Retina Scale) ─
+// Uncomment the block below when running on MacBook Pro:
+// output "eDP-1" {
+//     mode "3024x1964@120.000" // 14" MBP (16" use "3456x2234@120.000")
+//     scale 1.6
+// }
+
