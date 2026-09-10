@@ -30,6 +30,12 @@ if status is-interactive
     end
     alias q 'inir run'
 
+    # Desktop Session & OS Switchers
+    alias use-mac "command -v asahi-bless >/dev/null; and sudo asahi-bless; and sudo reboot; or echo 'asahi-bless not found (not on Apple Silicon)'"
+    alias reboot-macos "use-mac"
+    alias use-niri "printf '[Autologin]\nUser=%s\nSession=niri\n' \$USER | sudo tee /etc/sddm.conf.d/autologin.conf >/dev/null; and echo 'Switched to Niri session. Run sudo reboot to apply.'"
+    alias use-hyprland "printf '[Autologin]\nUser=%s\nSession=hyprland\n' \$USER | sudo tee /etc/sddm.conf.d/autologin.conf >/dev/null; and echo 'Switched to Hyprland session. Run sudo reboot to apply.'"
+
     # Welcome banner on interactive startup
     if command -v welcome-msg &>/dev/null && not set -q _INIR_WELCOME_SHOWN
         set -g _INIR_WELCOME_SHOWN 1
