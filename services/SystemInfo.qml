@@ -54,9 +54,11 @@ Singleton {
             const nameMatch = textOsRelease.match(/^NAME="(.+?)"/m)
             distroName = prettyNameMatch ? prettyNameMatch[1] : (nameMatch ? nameMatch[1].replace(/Linux/i, "").trim() : "Unknown")
 
-            // Extract the ID
+            // Extract the ID and ID_LIKE
             const idMatch = textOsRelease.match(/^ID="?(.+?)"?$/m)
             distroId = idMatch ? idMatch[1] : "unknown"
+            const idLikeMatch = textOsRelease.match(/^ID_LIKE="?(.+?)"?$/m)
+            const idLike = idLikeMatch ? idLikeMatch[1].toLowerCase() : ""
 
             // Extract additional URLs and logo
             const homeUrlMatch = textOsRelease.match(/^HOME_URL="(.+?)"/m)
@@ -72,9 +74,10 @@ Singleton {
             const logoFieldMatch = textOsRelease.match(/^LOGO="?(.+?)"?$/m)
             logo = logoFieldMatch ? logoFieldMatch[1] : ""
 
-            // Update the distroIcon property based on distroId
+            // Update the distroIcon property based on distroId / ID_LIKE
             switch (distroId) {
-                case "arch": distroIcon = "arch-symbolic"; break;
+                case "arch":
+                case "archarm": distroIcon = "arch-symbolic"; break;
                 case "endeavouros": distroIcon = "endeavouros-symbolic"; break;
                 case "cachyos": distroIcon = "cachyos-symbolic"; break;
                 case "nixos": distroIcon = "nixos-symbolic"; break;
@@ -88,7 +91,17 @@ Singleton {
                 case "kali": distroIcon = "debian-symbolic"; break;
                 case "funtoo":
                 case "gentoo": distroIcon = "gentoo-symbolic"; break;
-                default: distroIcon = "linux-symbolic"; break;
+                default:
+                    if (idLike.includes("arch")) {
+                        distroIcon = "arch-symbolic";
+                    } else if (idLike.includes("ubuntu")) {
+                        distroIcon = "ubuntu-symbolic";
+                    } else if (idLike.includes("debian")) {
+                        distroIcon = "debian-symbolic";
+                    } else {
+                        distroIcon = "linux-symbolic";
+                    }
+                    break;
             }
             if (textOsRelease.toLowerCase().includes("nyarch")) {
                 distroIcon = "nyarch-symbolic"

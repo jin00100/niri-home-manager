@@ -51,14 +51,14 @@ binds {
     Mod+Shift+S { spawn "inir" "region" "menu"; }
     Mod+Shift+X { spawn "inir" "region" "ocr"; }
     Mod+Shift+A { spawn "inir" "region" "search"; }
-    // Unified snip menu (pick action/scope from the in-overlay toolbar).
-    Ctrl+Shift+S { spawn "inir" "region" "menu"; }
+    // Unified snip menu (Ctrl+Shift+A: classic screenshot hotkey)
+    Ctrl+Shift+A { spawn "inir" "region" "menu"; }
 
-    // Wallpaper picker, settings, cheatsheet, panel family switch.
+    // Wallpaper picker, settings, cheatsheet.
+    Mod+Ctrl+W { spawn "inir" "wallpaperSelector" "toggle"; }
     Ctrl+Alt+T { spawn "inir" "wallpaperSelector" "toggle"; }
     Mod+Comma { spawn "inir" "settings"; }
     Mod+Slash { spawn "inir" "cheatsheet" "toggle"; }
-    Mod+Shift+W { spawn "inir" "panelFamily" "cycle"; }
 
     // Session / power dialog.
     Mod+Shift+Q { spawn "inir" "session" "toggle"; }
@@ -70,7 +70,7 @@ binds {
     Mod+T { spawn "inir" "terminal"; }
     Mod+Return { spawn "inir" "terminal"; }
     Super+E { spawn "nautilus"; }
-    Super+W { spawn "inir" "browser"; }
+    Super+B { spawn "inir" "browser"; }
 
     // ═══════════════════════════════════════════════════════════════════════
     // Window management
