@@ -12,6 +12,7 @@
             "keys": "cyan",
             "title": "cyan"
         },
+        "disableLinewrap": true,
         "size": {
             "maxPrefix": "MB",
             "ndigits": 0,
@@ -26,13 +27,9 @@
         "title",
         "separator",
         "os",
-        "host",
         {
-            "type": "board",
-            "key": "Host",
-            "condition": {
-                "succeeded": false
-            }
+            "type": "host",
+            "format": "lua:local args = ...; return (args.name:gsub(\"%s*%b()\", \"\"))"
         },
         {
             "type": "kernel",
@@ -41,7 +38,7 @@
         "uptime",
         {
             "type": "packages",
-            "combined": true
+            "format": "{?pacman}{pacman} (pacman){?}{/pacman}{all} (pkgs){/}"
         },
         "shell",
         {
@@ -50,15 +47,14 @@
             "key": "Resolution"
         },
         "de",
-        "wm",
+        {
+            "type": "wm",
+            "format": "{pretty-name}{?version} {version}{?}"
+        },
         "wmtheme",
         "theme",
         "icons",
         "terminal",
-        {
-            "type": "terminalfont",
-            "format": "{/name}{-}{/}{name}{?size} {size}{?}"
-        },
         "cpu",
         {
             "type": "gpu",
