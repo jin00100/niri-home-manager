@@ -29,6 +29,9 @@ if status is-interactive
         alias ls 'eza --icons=auto'
     end
     alias q 'inir run'
+    if test -x /usr/bin/fastfetch
+        alias fastfetch /usr/bin/fastfetch
+    end
 
     # Desktop Session & OS Switchers
     alias use-mac "command -v asahi-bless >/dev/null; and sudo asahi-bless; and sudo reboot; or echo 'asahi-bless not found (not on Apple Silicon)'"

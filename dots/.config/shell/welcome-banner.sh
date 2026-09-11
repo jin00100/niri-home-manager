@@ -75,9 +75,12 @@ else
   fi
 
   # Arch Linux local terminal -> Display classic Neofetch layout (Circular Colors)
-  if command -v fastfetch &>/dev/null; then
+  FF_BIN="fastfetch"
+  [[ -x "/usr/bin/fastfetch" ]] && FF_BIN="/usr/bin/fastfetch"
+
+  if command -v "$FF_BIN" &>/dev/null; then
     echo ""
-    fastfetch -c "$HOME/.config/fastfetch/config.jsonc" 2>/dev/null || fastfetch
+    "$FF_BIN" -c "$HOME/.config/fastfetch/config.jsonc" 2>/dev/null || "$FF_BIN"
     echo ""
   elif command -v neofetch &>/dev/null; then
     echo ""

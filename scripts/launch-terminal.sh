@@ -16,18 +16,38 @@ fi
 
 TERMINAL="${TERMINAL:-kitty}"
 
+# Prefer Fish shell in iNiR session if available and no command args are specified
+EXTRA_ARGS=()
+if [[ $# -eq 0 ]] && command -v fish &>/dev/null; then
+    case "$TERMINAL" in
+        kitty) EXTRA_ARGS=(-o "shell=fish") ;;
+        ghostty) EXTRA_ARGS=(--command=fish) ;;
+        foot) EXTRA_ARGS=(fish) ;;
+        alacritty) EXTRA_ARGS=(-e fish) ;;
+    esac
+fi
+
 if [[ -x "/usr/bin/$TERMINAL" ]]; then
-    exec "/usr/bin/$TERMINAL" "$@"
+    exec "/usr/bin/$TERMINAL" "${EXTRA_ARGS[@]}" "$@"
 elif command -v "$TERMINAL" &>/dev/null; then
-    exec "$TERMINAL" "$@"
+    exec "$TERMINAL" "${EXTRA_ARGS[@]}" "$@"
 fi
 
 # Fallback chain: project default first, then popular alternatives
 for fallback in kitty foot ghostty alacritty wezterm konsole xterm; do
+    FALLBACK_ARGS=()
+    if [[ $# -eq 0 ]] && command -v fish &>/dev/null; then
+        case "$fallback" in
+            kitty) FALLBACK_ARGS=(-o "shell=fish") ;;
+            ghostty) FALLBACK_ARGS=(--command=fish) ;;
+            foot) FALLBACK_ARGS=(fish) ;;
+            alacritty) FALLBACK_ARGS=(-e fish) ;;
+        esac
+    fi
     if [[ -x "/usr/bin/$fallback" ]]; then
-        exec "/usr/bin/$fallback" "$@"
+        exec "/usr/bin/$fallback" "${FALLBACK_ARGS[@]}" "$@"
     elif command -v "$fallback" &>/dev/null; then
-        exec "$fallback" "$@"
+        exec "$fallback" "${FALLBACK_ARGS[@]}" "$@"
     fi
 done
 
