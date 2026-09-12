@@ -9,6 +9,7 @@
 
 # 1. SSH Detection
 is_ssh() {
+  [[ -n "$WAYLAND_DISPLAY" || -n "$DISPLAY" ]] && return 1
   [[ -n "$SSH_CLIENT" || -n "$SSH_TTY" || -n "$SSH_CONNECTION" ]] && return 0
   [[ "$(ps -o comm= -p $PPID 2>/dev/null)" == "sshd" ]]
 }

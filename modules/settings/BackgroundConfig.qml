@@ -1173,11 +1173,11 @@ ContentPage {
         SettingsGroup {
             ContentSubsection {
                 title: Translation.tr("Custom wallpapers directory")
-                tooltip: Translation.tr("Leave empty for default ~/Pictures/Wallpapers")
+                tooltip: Translation.tr("Leave empty for default repo assets/wallpapers")
 
                 MaterialTextField {
                     Layout.fillWidth: true
-                    placeholderText: "~/Pictures/Wallpapers"
+                    placeholderText: Directories.shortHomePath(Directories.wallpapersPath)
                     text: Config.options?.wallpapers?.directory ?? ""
                     onEditingFinished: Config.setNestedValue("wallpapers.directory", text)
                 }

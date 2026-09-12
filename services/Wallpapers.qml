@@ -933,6 +933,7 @@ Singleton {
             if (exitCode === 0) {
                 root._setFolderModelDirectory(Qt.resolvedUrl(FileUtils.parentDirectory(validateDirProc.nicePath)))
             } else {
+                root._setFolderModelDirectory(Qt.resolvedUrl(root.defaultFolder))
                 root._scheduleFolderModelTransitionEnd()
             }
         }

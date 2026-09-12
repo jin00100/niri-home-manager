@@ -38,6 +38,7 @@ if status is-interactive
     alias reboot-macos "use-mac"
     alias use-niri "printf '[Autologin]\nUser=%s\nSession=niri\n' \$USER | sudo tee /etc/sddm.conf.d/autologin.conf >/dev/null; and echo 'Switched to Niri session. Run sudo reboot to apply.'"
     alias use-hyprland "printf '[Autologin]\nUser=%s\nSession=hyprland\n' \$USER | sudo tee /etc/sddm.conf.d/autologin.conf >/dev/null; and echo 'Switched to Hyprland session. Run sudo reboot to apply.'"
+    alias kill-hypr "killall -9 Hyprland start-hyprland 2>/dev/null; or true; and echo 'Hyprland background processes terminated.'"
 
     # Welcome banner on interactive startup
     if command -v welcome-msg &>/dev/null && not set -q _INIR_WELCOME_SHOWN

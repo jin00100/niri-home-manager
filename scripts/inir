@@ -1463,7 +1463,7 @@ detect_running_instance_dir() {
         json_output="$($qs_bin list --all --json 2>/dev/null || true)"
         if [[ -n "$json_output" && "$json_output" != "[]" ]]; then
             running_path="$(printf '%s' "$json_output" | jq -r '
-                [.[] | (.config_path // .configPath // empty) | select(endswith("/shell.qml"))]
+                [.[] | (.config_path // .configPath // empty) | select((.shell_id // "") == "inir" or ((.config_path // .configPath // "") | contains("/inir/")))]
                 | .[0] // empty
             ' 2>/dev/null || true)"
         fi
