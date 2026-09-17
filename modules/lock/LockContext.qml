@@ -66,6 +66,7 @@ Scope {
         root.alsoInhibitIdle = alsoInhibitIdle;
         root.unlockInProgress = true;
         pamTimeoutTimer.restart();
+        stopFingerPam();
         pam.start();
     }
 

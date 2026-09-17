@@ -4,8 +4,8 @@
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 # Skip if already unlocked
-if "${SCRIPT_DIR}/is_unlocked.sh"; then
-    exit 1
+if "${SCRIPT_DIR}/is_unlocked.sh" 2>/dev/null; then
+    exit 0
 fi
 
 # Prompt for password if not provided
@@ -14,10 +14,9 @@ if [[ -z "${UNLOCK_PASSWORD}" ]]; then
     read -s UNLOCK_PASSWORD || return
 fi
 
-# Unlock
-killall -q -u "$(whoami)" gnome-keyring-daemon
-eval $(echo -n "${UNLOCK_PASSWORD}" \
-           | gnome-keyring-daemon --daemonize --login \
-           | sed -e 's/^/export /')
+# Unlock via official daemon interface without killing running services
+if [[ -n "${UNLOCK_PASSWORD}" ]]; then
+    echo -n "${UNLOCK_PASSWORD}" | gnome-keyring-daemon --unlock 2>/dev/null || true
+fi
 unset UNLOCK_PASSWORD
-echo '' >&2
+exit 0
