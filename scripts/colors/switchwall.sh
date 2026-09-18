@@ -91,6 +91,11 @@ write_generated_wallpaper_path() {
 get_max_monitor_resolution() {
     local width=1920
     local height=1080
+    if [[ -z "${NIRI_SOCKET:-}" ]]; then
+        local found_sock
+        found_sock=$(ls /run/user/"$UID"/niri.*.sock 2>/dev/null | head -1)
+        [[ -n "$found_sock" ]] && export NIRI_SOCKET="$found_sock"
+    fi
     # Try Niri first
     if command -v niri >/dev/null 2>&1 && niri msg outputs >/dev/null 2>&1; then
         # Parse niri msg outputs for resolution (e.g., "  Current mode: 1920x1080@60.000")
@@ -100,7 +105,7 @@ get_max_monitor_resolution() {
             height=$(echo "$res" | cut -d'x' -f2)
         fi
     # Fallback to Hyprland
-    elif command -v hyprctl >/dev/null 2>&1; then
+    elif [[ -n "${HYPRLAND_INSTANCE_SIGNATURE:-}" ]] && command -v hyprctl >/dev/null 2>&1; then
         width="$(hyprctl monitors -j 2>/dev/null | jq '([.[].width] | max)' | xargs)"
         height="$(hyprctl monitors -j 2>/dev/null | jq '([.[].height] | max)' | xargs)"
     fi

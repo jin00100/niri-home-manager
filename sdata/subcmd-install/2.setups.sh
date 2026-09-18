@@ -265,10 +265,10 @@ PORTAL_EOF
 # CJK Locales (Chinese, Japanese, Korean)
 #####################################################################################
 function setup_cjk_locales(){
-  tui_info "Setting up CJK language locales..."
+  tui_info "Setting up CJK and standard locales..."
   if [[ -f /etc/locale.gen ]] && command -v locale-gen &>/dev/null; then
     local cjk_changed=false
-    for loc in "zh_CN.UTF-8 UTF-8" "ja_JP.UTF-8 UTF-8" "ko_KR.UTF-8 UTF-8"; do
+    for loc in "en_US.UTF-8 UTF-8" "zh_CN.UTF-8 UTF-8" "ja_JP.UTF-8 UTF-8" "ko_KR.UTF-8 UTF-8"; do
       if grep -q "^#${loc}" /etc/locale.gen 2>/dev/null; then
         pkg_sudo sed -i "s/^#${loc}/${loc}/" /etc/locale.gen 2>/dev/null || true
         cjk_changed=true
@@ -276,9 +276,9 @@ function setup_cjk_locales(){
     done
     if [[ "$cjk_changed" == "true" ]]; then
       pkg_sudo locale-gen >/dev/null 2>&1 || true
-      log_success "CJK locales enabled and generated (zh_CN, ja_JP, ko_KR)"
+      log_success "Locales enabled and generated (en_US, zh_CN, ja_JP, ko_KR)"
     else
-      log_info "CJK locales already configured"
+      log_info "CJK and standard locales already configured"
     fi
   fi
 }

@@ -69,6 +69,12 @@ window-rule {
     shadow { off; }
 }
 
+// Fcitx5 input method candidate window (especially for XWayland applications)
+window-rule {
+    match app-id=r#"^fcitx$"# title="^Fcitx5 Input Window$"
+    open-floating true
+}
+
 // ── Privacy: block password managers from screen capture ────────────────────
 // Uncomment the block below to hide these apps during screencasts.
 // /-window-rule {
