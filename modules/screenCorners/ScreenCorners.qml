@@ -47,11 +47,10 @@ Scope {
             && (Config.options?.orbit?.hotCornerEnable ?? true)
             && cornerName === orbitCorner
             && !orbitConflictsWithNiriOverview
-            && !fullscreen
         readonly property bool shouldShowSidebarCornerOpen: shouldShowCornerOpen
             && !shouldShowOrbitHotCorner
 
-        visible: !fullscreen && (showFakeRounding || shouldShowSidebarCornerOpen || shouldShowOrbitHotCorner)
+        visible: showFakeRounding || shouldShowSidebarCornerOpen || shouldShowOrbitHotCorner
 
         exclusionMode: ExclusionMode.Ignore
         Item { id: cornerEmptyMask; width: 0; height: 0 }
@@ -126,6 +125,14 @@ Scope {
                     hoverEnabled: true
                     property bool armed: true
                     property bool atCorner: false
+
+                    Connections {
+                        target: GlobalStates
+                        function onOverviewOpenChanged(): void {
+                            if (!GlobalStates.overviewOpen)
+                                orbitHotCornerArea.armed = true
+                        }
+                    }
 
                     function triggerOrbit(): void {
                         if (!armed || !atCorner)
