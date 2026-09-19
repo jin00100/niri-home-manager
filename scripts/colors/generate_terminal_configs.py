@@ -901,34 +901,53 @@ theme[process_start]="{primary_dim}"
 theme[process_mid]="{primary_dim}"
 theme[process_end]="{primary_dim}"
 """
-    os.makedirs(os.path.dirname(output_path), exist_ok=True)
-    with open(output_path, "w") as f:
-        f.write(config)
+    try:
+        os.makedirs(os.path.dirname(output_path), exist_ok=True)
+        if os.path.islink(output_path) and not os.access(output_path, os.W_OK):
+            try:
+                os.unlink(output_path)
+            except OSError:
+                pass
+        with open(output_path, "w") as f:
+            f.write(config)
+    except OSError as e:
+        print(f"Warning: Failed to write btop theme to {output_path}: {e}")
+        return
 
     # Auto-integrate: set color_theme in btop.conf
     home = os.path.expanduser("~")
     btop_conf = f"{home}/.config/btop/btop.conf"
     btop_path = Path(btop_conf)
-    if btop_path.exists():
-        content = btop_path.read_text()
-        new_line = 'color_theme = "ii-auto"'
-        if re.search(r"^color_theme\s*=", content, re.MULTILINE):
-            new_content = re.sub(
-                r"^color_theme\s*=.*$", new_line, content, flags=re.MULTILINE
-            )
-            if new_content != content:
-                btop_path.write_text(new_content)
-                print(f"\u2713 Generated btop theme and updated btop.conf")
+    try:
+        if btop_path.exists():
+            if btop_path.is_symlink() and not os.access(btop_conf, os.W_OK):
+                try:
+                    target_content = btop_path.read_text()
+                    btop_path.unlink()
+                    btop_path.write_text(target_content)
+                except OSError:
+                    pass
+            content = btop_path.read_text()
+            new_line = 'color_theme = "ii-auto"'
+            if re.search(r"^color_theme\s*=", content, re.MULTILINE):
+                new_content = re.sub(
+                    r"^color_theme\s*=.*$", new_line, content, flags=re.MULTILINE
+                )
+                if new_content != content:
+                    btop_path.write_text(new_content)
+                    print(f"✓ Generated btop theme and updated btop.conf")
+                else:
+                    print(f"✓ Generated btop theme (already using ii-auto)")
             else:
-                print(f"\u2713 Generated btop theme (already using ii-auto)")
+                with open(btop_conf, "a") as f:
+                    f.write(f"\n{new_line}\n")
+                print(f"✓ Generated btop theme and added to btop.conf")
         else:
-            with open(btop_conf, "a") as f:
-                f.write(f"\n{new_line}\n")
-            print(f"\u2713 Generated btop theme and added to btop.conf")
-    else:
-        btop_path.parent.mkdir(parents=True, exist_ok=True)
-        btop_path.write_text(f'color_theme = "ii-auto"\n')
-        print(f"\u2713 Generated btop theme and created btop.conf")
+            btop_path.parent.mkdir(parents=True, exist_ok=True)
+            btop_path.write_text(f'color_theme = "ii-auto"\n')
+            print(f"✓ Generated btop theme and created btop.conf")
+    except OSError as e:
+        print(f"Warning: Failed to update btop.conf: {e}")
 
 
 def generate_omp_config(colors, output_path):
