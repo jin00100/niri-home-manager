@@ -459,6 +459,12 @@ if command -v konsole &>/dev/null; then
   log_success "Konsole config installed"
 fi
 
+# btop config & themes
+if [[ -d "dots/.config/btop" ]]; then
+  install_dir "dots/.config/btop" "${XDG_CONFIG_HOME}/btop"
+  log_success "btop configuration and themes installed"
+fi
+
 # Electron app Wayland flags (Chrome, VS Code)
 for flagfile in chrome-flags.conf code-flags.conf; do
   if [[ -f "dots/.config/${flagfile}" ]]; then

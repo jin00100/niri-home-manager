@@ -97,3 +97,4 @@ window-rule {
 //     match app-id=r#"^org\.gnome\.Calculator$"#
 //     open-floating true
 // }
+
