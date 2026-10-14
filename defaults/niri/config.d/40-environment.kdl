@@ -37,4 +37,6 @@ environment {
     // Input method (Fcitx5)
     XMODIFIERS "@im=fcitx"
     QT_IM_MODULE "fcitx"
+    GTK_IM_MODULE "fcitx"
+    GLFW_IM_MODULE "ibus"
 }
