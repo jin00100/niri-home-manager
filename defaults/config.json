@@ -1666,7 +1666,7 @@
             "enable": false,
             "screenOffTimeout": 120,
             "lockTimeout": 300,
-            "suspendTimeout": 600
+            "suspendTimeout": 0
         }
     },
     "gameMode": {

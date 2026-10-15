@@ -26,7 +26,7 @@ Singleton {
         ? (Config.options?.idle?.onBattery?.lockTimeout ?? 300)
         : (Config.options?.idle?.lockTimeout ?? 600)
     readonly property int suspendTimeout: batteryProfileActive
-        ? (Config.options?.idle?.onBattery?.suspendTimeout ?? 600)
+        ? (Config.options?.idle?.onBattery?.suspendTimeout ?? 0)
         : (Config.options?.idle?.suspendTimeout ?? 0)
     readonly property string launcherPath: Quickshell.shellPath("scripts/inir")
 
