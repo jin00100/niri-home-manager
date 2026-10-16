@@ -40,7 +40,7 @@ binds {
     Mod+Space repeat=false { spawn "inir" "overview" "toggle"; }
 
     // Input method toggle (Fcitx5 Chinese / English switch).
-    Ctrl+Space { spawn "/home/jin_arch/.local/bin/toggle-fcitx5"; }
+    Ctrl+Space { spawn "inir" "ime" "toggle"; }
 
     // Clipboard history overlay.
     Mod+V { spawn "inir" "clipboard" "toggle"; }

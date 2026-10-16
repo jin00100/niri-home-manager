@@ -102,7 +102,7 @@ EOF
 
     cat <<'EOF'
 Runtime:
-  start, stop, run, restart, kill, terminal, browser, close-window, colorpicker
+  start, stop, run, restart, kill, terminal, browser, close-window, colorpicker, ime
 
 Maintenance (delegates to setup):
   install, reinstall, update, doctor, status, migrate, rollback, my-changes, uninstall
@@ -3711,6 +3711,41 @@ case "$command_name" in
             exit 1
         fi
         exec /usr/bin/hyprpicker -a
+        ;;
+    ime)
+        action="${1:-toggle}"
+        case "$action" in
+            -h|--help)
+                echo "Usage: inir ime [toggle|chinese|pinyin|english|us|status]" >&2
+                exit 0
+                ;;
+            toggle)
+                current="$(fcitx5-remote -n 2>/dev/null || true)"
+                if [[ "$current" == "pinyin" ]]; then
+                    fcitx5-remote -s keyboard-us
+                else
+                    fcitx5-remote -s pinyin
+                fi
+                exit 0
+                ;;
+            chinese|pinyin)
+                fcitx5-remote -s pinyin
+                exit 0
+                ;;
+            english|us)
+                fcitx5-remote -s keyboard-us
+                exit 0
+                ;;
+            status)
+                fcitx5-remote -n
+                exit 0
+                ;;
+            *)
+                echo "Unknown option: $action" >&2
+                echo "Usage: inir ime [toggle|chinese|pinyin|english|us|status]" >&2
+                exit 1
+                ;;
+        esac
         ;;
     ipc)
         require_qs
