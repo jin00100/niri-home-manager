@@ -46,6 +46,7 @@ PopupWindow {
     }
 
     function open() {
+        if (GlobalStates.screenLocked) return;
         root.opened = true;
         root.visible = true;
         if (!root.registeredContextMenu) {
@@ -53,6 +54,15 @@ PopupWindow {
             root.registeredContextMenu = true;
         }
         root.menuOpened(root);
+    }
+
+    Connections {
+        target: GlobalStates
+        function onScreenLockedChanged() {
+            if (GlobalStates.screenLocked && root.visible) {
+                root.finishClose();
+            }
+        }
     }
 
     function finishClose() {

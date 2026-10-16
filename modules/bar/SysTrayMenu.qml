@@ -38,6 +38,7 @@ PopupWindow {
     }
 
     function open() {
+        if (GlobalStates.screenLocked) return;
         root.closing = false;
         root.visible = true;
         popupBackground.shown = true;
@@ -46,6 +47,15 @@ PopupWindow {
             root.registeredContextMenu = true;
         }
         root.menuOpened(root);
+    }
+
+    Connections {
+        target: GlobalStates
+        function onScreenLockedChanged() {
+            if (GlobalStates.screenLocked && root.visible) {
+                root.close();
+            }
+        }
     }
 
     function finalizeClose() {

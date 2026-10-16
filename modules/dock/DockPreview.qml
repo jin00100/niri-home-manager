@@ -5,6 +5,7 @@ import Qt5Compat.GraphicalEffects
 import Quickshell
 import Quickshell.Wayland
 import Quickshell.Widgets
+import qs
 import qs.services
 import qs.modules.common
 import qs.modules.common.widgets
@@ -57,8 +58,17 @@ PopupWindow {
     }
 
     function open(): void {
+        if (GlobalStates.screenLocked) return
         marginBehavior.enabled = true
         root.visible = true
+    }
+
+    Connections {
+        target: GlobalStates
+        function onScreenLockedChanged() {
+            if (GlobalStates.screenLocked && root.visible)
+                root.close()
+        }
     }
 
     function show(appEntry: var, button: Item): void {

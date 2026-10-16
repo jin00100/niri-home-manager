@@ -3,6 +3,7 @@ import QtQuick
 import QtQuick.Window
 import Quickshell
 import Quickshell.Widgets
+import qs
 import qs.modules.common
 import qs.modules.common.widgets
 
@@ -56,7 +57,16 @@ Item {
     }
 
     // Whether we can use PopupWindow (requires QsWindow, i.e. PanelWindow context)
-    readonly property bool _canUsePopupWindow: root.QsWindow.window !== null
+    // Never use PopupWindow when locked or when the parent window is a session lock surface.
+    // In Wayland, xdg_popup cannot be parented to an ext_session_lock surface, which causes
+    // compositor error: "xdg_surface: error 1: xdg_popup must have parent before mapping"
+    // and causes Niri to drop connection and display the red emergency lock screen.
+    readonly property bool _isSessionLock: {
+        if (typeof GlobalStates !== "undefined" && GlobalStates.screenLocked) return true;
+        const winStr = String(root.QsWindow.window ?? "");
+        return winStr.indexOf("SessionLock") !== -1 || winStr.indexOf("LockSurface") !== -1;
+    }
+    readonly property bool _canUsePopupWindow: root.QsWindow.window !== null && !_isSessionLock
 
     Timer {
         id: _showDelayTimer

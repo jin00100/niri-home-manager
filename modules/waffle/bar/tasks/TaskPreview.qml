@@ -25,12 +25,21 @@ PopupWindow {
     }
 
     function open() {
+        if (GlobalStates.screenLocked) return;
         releaseTimer.stop()
         root.contentResident = true
         marginBehavior.enabled = true;
         root.visible = true;
         // Capture previews for windows in this app entry
         captureAppPreviews();
+    }
+
+    Connections {
+        target: GlobalStates
+        function onScreenLockedChanged() {
+            if (GlobalStates.screenLocked && root.visible)
+                root.close();
+        }
     }
 
     function show(appEntry: var, button: Item) {

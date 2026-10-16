@@ -50,9 +50,19 @@ Loader {
     }
 
     function requestOpen(): void {
+        if (GlobalStates.screenLocked) return
         if (GlobalStates.activeContextMenu && GlobalStates.activeContextMenu !== root)
             GlobalStates.activeContextMenu.active = false
         root.active = true
+    }
+
+    Connections {
+        target: GlobalStates
+        function onScreenLockedChanged() {
+            if (GlobalStates.screenLocked && root.active) {
+                root.close()
+            }
+        }
     }
 
     function updateAnchor(): void {
